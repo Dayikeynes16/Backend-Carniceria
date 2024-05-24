@@ -14,15 +14,18 @@ class QuoteController extends Controller
     }
 
     public function calculate(request $request)
-{
-    if ($request->hasFile('file') && $request->file('file')->isValid()) {
+{   $request->validate([
+    'file'=>'file|required',
+    
+]);
+   
         try {
             $response = $this->apiRequest($request->file('file'));
             return $response->json();
         } catch (\Exception $e) {
             return back()->with('error', 'Error al procesar la solicitud: ' . $e->getMessage());
         }
-    }
+    
     return back()->with('error', 'Error al subir el archivo.');
 }
 
