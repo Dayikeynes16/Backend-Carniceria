@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\QuoteController;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -44,6 +45,8 @@ route::post('/usuarios', function (Request $request) {
         'data' => $usuario,'usuuario guardado con exito'
     ],200);
 });
+route::get('/modelos', [ProductsController::class, 'Modelos']);
+route::post('/savemodel', [ProductsController::class, 'StoreProduct']);
 
 route::get('/{any}', function (): View {
     return view('welcome');

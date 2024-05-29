@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\User;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
@@ -38,5 +39,9 @@ class AuthController extends Controller
         
         return response()->json(['data'=>'El email o la contraseña no son correctas.', 'code'=>422]);
         
+    }
+    function Modelos(){
+        $modelos = Product::all();
+        return response()->json(['modelos'=>$modelos]);
     }
 }

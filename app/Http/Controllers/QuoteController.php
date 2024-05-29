@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FileRequest;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -21,9 +22,9 @@ class QuoteController extends Controller
    
         try {
             $response = $this->apiRequest($request->file('file'));
-            return $response->json();
+            return $response;
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al procesar la solicitud: ' . $e->getMessage());
+            return response()->json(['message'=>  $e->getMessage() ],409);
         }
     
     return back()->with('error', 'Error al subir el archivo.');
@@ -48,6 +49,9 @@ class QuoteController extends Controller
                         ->post($url, [
                             'material_type' => 'ABS'
                         ]);
-        return $response;
+                        if (!$response->json('http_code')) throw new Exception('Ocurrió un problema al procesar el archivo');
+
+        return $response->json();
+
     }
 }

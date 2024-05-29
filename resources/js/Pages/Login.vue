@@ -88,9 +88,10 @@ const login = ()=> {
     axios.post('/login',form.value)
     .then ((response)=>{
         console.log(response.data)
-        if (response.status === 200){
-            router.push({name:"cotizar"})
-        }
+        if (response.data.code === 422){
+           
+            alert('error')
+        }else{ router.push({name:"cotizar"})}
         
     })
 

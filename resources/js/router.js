@@ -5,6 +5,9 @@ import Cumpleaños from './Pages/Cumpleaños.vue'
 import Register from './Pages/Register.vue'
 import Cotizar from './Pages/Cotizacion.vue'
 import Login from './Pages/Login.vue'
+import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
+import Catalogo from './Pages/Catalogo.vue'
+import EditarCatalogo from './Pages/EditarCatalogo.vue'
 
 const routes = [{
     name: 'register',
@@ -17,15 +20,19 @@ const routes = [{
 },{
     name:'cumpleaños',
     path: '/cumple',
-    component: Cumpleaños},
-// },{
-//     name:'cotizar',
-//     path:'/cotizar',
-//     component: Cotizar
-// },{
-   { name: 'logear',
+    component: Cumpleaños
+},{
+    name: 'catalogo',
+    path: '/catalogo',
+    component: Catalogo
+},{
+     name: 'logear',
     path: '/logear',
     component: Login
+},{
+    name: 'editarcatalogo',
+    path: '/editcatalogo',
+    component: EditarCatalogo
 }
 ]
 
