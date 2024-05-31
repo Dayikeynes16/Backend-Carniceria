@@ -19,7 +19,7 @@ class AuthController extends Controller
     function login(Request $request){
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required|'
         ]);
         $credentials = $request->only('email', 'password');
         
@@ -27,11 +27,8 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
           
             $request->session()->regenerate();
-            
-            
-            
             return response()->json([
-                'data' => Auth::user()
+                'data' => Auth::user(), 'code'=>200
 
             ]);
         }
@@ -40,8 +37,5 @@ class AuthController extends Controller
         return response()->json(['data'=>'El email o la contraseña no son correctas.', 'code'=>422]);
         
     }
-    function Modelos(){
-        $modelos = Product::all();
-        return response()->json(['modelos'=>$modelos]);
-    }
+    
 }

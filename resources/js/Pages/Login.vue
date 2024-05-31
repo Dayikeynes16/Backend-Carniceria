@@ -1,7 +1,7 @@
 
 
 <template>
-    <div>
+    <div v-if="resultado">
         <v-img class="mx-auto my-6"
         max-width="150"
         
@@ -18,6 +18,7 @@
       <div class="text-subtitle-1 text-medium-emphasis">Correo</div>
       <v-form  @submit.prevent="login()">
       <v-text-field
+      :errorMessages="errorMessages.email"
       v-model="form.email"
         density="compact"
         placeholder="Email address"
@@ -34,6 +35,8 @@
       </div>
 
       <v-text-field
+      :errorMessages="errorMessages.password"
+
         v-model="form.password"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
@@ -73,9 +76,9 @@ import { ref } from 'vue';
 import axios from 'axios';
 import  {useRouter} from 'vue-router'; 
 const router = useRouter()
-
-
+const errorMessages = ref([])
 const visible = ref (false) 
+const resultado = ref(true)
 
 const form = ref ({
     email: null,
@@ -83,18 +86,23 @@ const form = ref ({
 })
 
 
-
-const login = ()=> {
-    axios.post('/login',form.value)
-    .then ((response)=>{
-        console.log(response.data)
-        if (response.data.code === 422){
-           
-            alert('error')
-        }else{ router.push({name:"cotizar"})}
-        
-    })
-
+const login = async () => {
+    try{
+      const {data} = await axios.post('/login',form.value);
+      console.log(data.code)
+      if (data.code === 200){
+        router.push({name:"cotizar"})
+      }else{
+        alert(data.data)
+      }
+      
+    } catch (error){
+      if (error.response.status === 422){
+            console.log(error.response.data.errors);
+            errorMessages.value = error.response.data.errors
+        }
+      
+    }
 }
 
 

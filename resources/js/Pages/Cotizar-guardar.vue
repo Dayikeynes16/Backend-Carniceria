@@ -72,7 +72,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 const archivos = []
 
-const orden = []
+
 
 const cotizar = async (file) => {
     loading.value = true
@@ -105,14 +105,8 @@ const cotizar = async (file) => {
             errorMessage.value = error.response.data.message
         }
         resultado.value = true
+        console.error(errorMessage.value)
         alert(errorMessage.value)
     }
 }
-
-const traerarchivos = async ()  =>{
-    const {data} = await axios.get('/traerarchivos')
-    // console.log(data)
-}
-
-traerarchivos();
 </script>

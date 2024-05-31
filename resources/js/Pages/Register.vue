@@ -17,6 +17,8 @@
       
 
         <v-text-field
+        required
+        :errorMessages="errorMessages.name"
       v-model="form.name"
         density="compact"
         placeholder="Ingresa tu nombre"
@@ -26,6 +28,7 @@
       <div class="text-subtitle-1 text-medium-emphasis">Correo</div>
       
       <v-text-field
+      :errorMessages="errorMessages.email"
       v-model="form.email"
         density="compact"
         placeholder="Correo electronico"
@@ -42,6 +45,7 @@
       </div>
 
       <v-text-field
+      :errorMessages="errorMessages.password"
         v-model="form.password"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
@@ -60,6 +64,7 @@
       </div>
 
       <v-text-field
+      :errorMessages="errorMessages.password_confirmation"
         v-model="form.password_confirmation"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="visible ? 'text' : 'password'"
@@ -109,7 +114,7 @@ const registrar = async () => {
   try {
     const { data } = await axios.post('/usuarios', form.value);
     console.log(data);
-    router.push({name:"cotizar"})
+    router.push({name:"logear"})
 
   } catch (error) {
     if (error.response.status   === 422) {

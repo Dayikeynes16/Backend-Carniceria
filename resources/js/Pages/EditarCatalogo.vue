@@ -8,7 +8,7 @@
                     </v-card-title>
                     <v-form @submit.prevent="savemodel()">
 
-                        <v-text-field v-model="form.name" label="Nombre del modelo" required>
+                        <v-text-field v-model="form.name" label="Nombre del modelo" required :errorMessages="errorMessages.name">
                         </v-text-field multiple>
 
                         <v-text-field required v-model="form.description" label="Añade una descripcion"></v-text-field>
@@ -29,44 +29,37 @@
                 </v-card>
 
             </v-col>
-            <!-- <v-col v-if="visible" cols="4">
-                <v-card>
-                    <v-card-title>
-
-                    </v-card-title>
-                    <v-card-text>
-
-                    </v-card-text>
-                    <v-card-actions>
-
-                    </v-card-actions>
-                </v-card>
-
-            </v-col> -->
 
 
-            <v-col cols="3">
-                <v-container v-for="imagen in imagenes">
-                    <v-card>
-                        <v-card-title>
-                            {{ imagen.name }}
-                        </v-card-title>
-                        <v-card-text>
-                            <v-img :src="`/${imagen.image}`">
 
-                            </v-img>
+            <v-col cols="8">
+                <v-row>
+                    <v-col v-for="imagen in imagenes" cols="3">
+                        <v-card>
+                            <v-card-title>
+                                {{ imagen.name }}
+                            </v-card-title>
+                            <v-card-text>
+                                <v-img 
+                                :src="imagen.url">
 
-                        </v-card-text>
-                        <v-card-actions>
+                                </v-img>
 
-                        </v-card-actions>
-                    </v-card>
-                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+
+                            </v-card-actions>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12">
+                        <v-pagination v-model="page" :length="paginastotales"></v-pagination>
+                    </v-col>
+                </v-row>
 
             </v-col>
-            <v-pagination v-if="visible" v-model="page" :length="paginastotales" @input="modelos" rounded="circle"
-                next-icon="mdi-menu-right" prev-icon="mdi-menu-left">
-            </v-pagination>
+      
         </v-row>
     </v-container>
 </template>
@@ -80,7 +73,8 @@ const token = document.querySelector("meta[name='csrf-token']").getAttribute('va
 const imagenes = ref([])
 const img = {}
 const page = ref(1);
-const paginastotales = ref(0);
+const paginastotales = ref(1);
+const errorMessages = ref({})
 
 const form = ref({
     namme: null,
@@ -91,18 +85,18 @@ const form = ref({
 
 const savemodel = async () => {
     try {
-        axios.post('/savemodel', form.value, {
+        const {data}= await axios.post('/savemodel', form.value, {
             headers: {
                 'X-CSRF-TOKEN': token,
                 'Content-Type': 'multipart/form-data'
             }
         })
-            .then((response) => {
-                alert('guradado exitoso')
-                console.log(response.data)
-            })
+           
+     
     } catch (error) {
-
+        if (error.response.status === 422){
+            errorMessages.value = error.response.data.errors
+        }
     }
 }
 
@@ -112,18 +106,12 @@ const modelos = async () => {
     const { data } = await axios.get(`/modelos?page=${page.value}`)
     imagenes.value = data.data
     page.value = data.current_page;
-    console.log(page.value)
-    console.log(page)
-
-    const paginacion = data.links.slice(1, data.links.length - 1)
-
-    paginastotales.value = paginacion.length
-
-    visible.value = true
+    paginastotales.value = data.last_page
+    console.log(paginastotales.value)
 }
 
-watch(page, () => {
-    modelos();
+watch(() => page.value, async () => {
+    await modelos();
 });
 
 
