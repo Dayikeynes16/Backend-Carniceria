@@ -8,6 +8,9 @@ import Login from './Pages/Login.vue'
 import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
 import Catalogo from './Pages/Catalogo.vue'
 import EditarCatalogo from './Pages/EditarCatalogo.vue'
+import Cuenta from './Pages/Cuenta.vue'
+import Direcciones from './Pages/Direcciones.vue'
+import editarModelo from './Pages/editarModelo.vue'
 
 const routes = [{
     name: 'register',
@@ -33,6 +36,18 @@ const routes = [{
     name: 'editarcatalogo',
     path: '/editcatalogo',
     component: EditarCatalogo
+},{
+    name: 'Cuenta',
+    path: '/Cuenta',
+    component: Cuenta
+},{
+    name: 'Direcciones',
+    path: '/direcciones',
+    component: Direcciones
+},{
+    name: 'editarModelo',
+    path: '/modelos/:id/editar',
+    component: editarModelo
 }
 ]
 

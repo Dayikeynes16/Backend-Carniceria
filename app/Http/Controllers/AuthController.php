@@ -37,5 +37,14 @@ class AuthController extends Controller
         return response()->json(['data'=>'El email o la contraseña no son correctas.', 'code'=>422]);
         
     }
+
+    public function get_user(Request $request){
+        
+        $id = $request->user()->id;
+        $user = User::find($id)->with('direcciones')->first();
+
+        return response()->json($user);
+
+    }
     
 }

@@ -50,4 +50,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Orden::class, 'usuario_id');
     }
+    public function direcciones(){
+        return $this->hasMany(Direccion::class,'usuario_id');
+    }
 }

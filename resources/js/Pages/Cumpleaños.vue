@@ -19,10 +19,15 @@
         </div>
         <button class="btn btn-primary" type="submit">Enviar</button>
     </form>
+
+    <filesCard></filesCard>
+
 </template>
 <script setup>
 import { ref } from 'vue';
 import dayjs from 'dayjs';
+import filesCard from '../Components/files-card.vue';
+
 
 const errorMessages = ref({})
 const form = ref({
@@ -43,6 +48,7 @@ const calcularEdad = async () => {
         }
     }
 }
+
 
 
 </script>

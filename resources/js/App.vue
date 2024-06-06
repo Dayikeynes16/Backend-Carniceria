@@ -1,12 +1,9 @@
 <template>
     <v-app>
-        <v-app-bar :elevation="2">
-  <template v-slot:prepend>
-    <v-app-bar-nav-icon></v-app-bar-nav-icon>
-  </template>
-
-  <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
-</v-app-bar>
+      <Navbar>
+        
+      </Navbar>
+       
         <v-main>
             <router-view>
         
@@ -14,3 +11,8 @@
         </v-main>
     </v-app>
 </template>
+
+<script setup>
+import Navbar from './Components/Navbar.vue';
+
+</script>

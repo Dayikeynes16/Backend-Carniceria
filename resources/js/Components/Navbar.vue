@@ -1,38 +1,100 @@
+
 <template>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+  <!-- <v-app-bar :elevation="2">
+  <template v-slot:prepend>
+    <v-navigation-drawer v-model="drawer" temporary>
+      <v-list-item
+      title="{{ user.value.name }}"
+      >
+
+      </v-list-item>
+        
+    </v-navigation-drawer>
+
+  </template>
+  
+</v-app-bar> -->
+
+
+<v-app-bar>
+
+  
+
+  <v-app-bar-nav-icon
+  @click.stop="drawer = !drawer">
+
+</v-app-bar-nav-icon>
+  <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
+
+</v-app-bar>
+<v-navigation-drawer v-model="drawer" temporary>
+
+    <v-list-item
+  
+    prepend-icon="mdi-account-circle"
+    value="account"
+    @click= 'router.push({name:"Cuenta"})'
+    :title="user.name ">
+  
+    </v-list-item>
+
+    <v-divider></v-divider>
+    <v-list-item
+    @click= 'router.push({name:"catalogo"})'
+    title="Catalogo"
+    >
+    </v-list-item>
+
+    <v-list-item
+    @click= 'router.push({name:"cotizar"})'
+    title="Cotizar"
+    >
+    
+    
+
+
+    </v-list-item>
+
+  </v-navigation-drawer>
+
+
+
+
 </template>
+
+<script setup>
+
+
+
+import axios from 'axios';
+import {ref} from 'vue';
+import { useRouter } from 'vue-router';
+const user = ref({
+  name: null, 
+  correo: null
+})
+const router = useRouter()
+const drawer = ref(null)
+
+const get_user = async () => {
+
+  try {
+    const {data} = await axios.get('/get_user');
+  user.value.name = data.name;
+  user.value.correo = data.email
+  console.log(user.value.name)
+    
+  } catch (error) {
+    if(error.response.status===401){
+      router.push({name:'logear'})
+      return
+    }
+    
+  }
+  
+
+}
+
+get_user();
+
+</script>

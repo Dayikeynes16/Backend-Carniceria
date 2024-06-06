@@ -8,6 +8,7 @@ use App\Models\Orden;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class QuoteController extends Controller
 {
@@ -75,4 +76,18 @@ class QuoteController extends Controller
 
         return $response->json('result_data');
     }
+
+    public function deletefile(Request $request){
+        $id = $request->input('id');
+        $file = Files::find($id);
+    
+        if ($file) {
+            Storage::delete($file->path);
+            $file->delete();
+            return response()->json(['data' => 'eliminado con exito']);
+        } else {
+            return response()->json(['error' => 'Archivo no encontrado'], 404);
+        }
+    }
+    
 }

@@ -27,35 +27,18 @@
                 <v-overlay :model-value="loading" class="align-center justify-center">
                     <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
                 </v-overlay>
+           
             </v-col>
-            <v-col cols="5" v-if="resultado">
-                <v-card class="mx-auto">
-                    <v-card-title>
-                        Resultado: El costo estimado es de: ${{ costo }} MXN
-                    </v-card-title>
-                    <v-card-text>
-
-                        <v-list v-for="i in archivos" :items="tiempo" color="primary" rounded="shaped">
-                            <v-list-subheader>
-                                Archivo {{ i.nombre }}
-                            </v-list-subheader>
-                            <v-list-item>
-                                El tiempo estimado por este articulo es de: {{ i.minutos  }}
-                                minutos
-                            </v-list-item>
-                        </v-list>
-
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn @click='router.push({ name: "cumpleaños" })'>
-                            Proceder con la compra
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+            <v-col cols="8" >
+                <filesCard v-if="!loading"></filesCard>
             </v-col>
+        
         </v-row>
     </v-container>
+
+    
 </template>
+
 
 <script setup>
 import { ref } from 'vue';
@@ -70,9 +53,11 @@ const loading = ref(false)
 const errorMessage = ref('');
 import { useRouter } from 'vue-router';
 const router = useRouter()
-const archivos = []
 
-const orden = []
+
+import filesCard from '../Components/files-card.vue';
+
+
 
 const cotizar = async (file) => {
     loading.value = true
@@ -88,17 +73,7 @@ const cotizar = async (file) => {
             }
         })
         loading.value = false
-        console.log(data.data)
-        archivos.push(data.data);
-        tiempo_impresion.value = 0
-        console.log(archivos)
-        for (let i = 0; i < archivos.length; i++) {
-            tiempo_impresion.value += archivos[i].minutos
-            console.log(archivos[i].nombre)
-            console.log('hola')
-        }
-        costo.value = Math.round(((tiempo_impresion.value / 60) / 3.46) * 1.5);
-        resultado.value = true
+       
     } catch (error) {
         loading.value = false
         if (error.response && error.response.data && error.response.data.message) {
@@ -109,10 +84,4 @@ const cotizar = async (file) => {
     }
 }
 
-const traerarchivos = async ()  =>{
-    const {data} = await axios.get('/traerarchivos')
-    // console.log(data)
-}
-
-traerarchivos();
 </script>

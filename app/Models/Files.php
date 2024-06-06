@@ -13,6 +13,8 @@ class Files extends Model
 
     protected $fillable = ['nombre', 'path', 'minutos', 'precio', 'orden_id'];
 
+    protected $casts = ['precio'=>'float'];
+
     public function orden(): BelongsTo
     {
         return $this->belongsTo(Orden::class, 'orden_id');
