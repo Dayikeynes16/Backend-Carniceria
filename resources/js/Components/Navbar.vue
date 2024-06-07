@@ -1,25 +1,6 @@
 
 <template>
-  <!-- <v-app-bar :elevation="2">
-  <template v-slot:prepend>
-    <v-navigation-drawer v-model="drawer" temporary>
-      <v-list-item
-      title="{{ user.value.name }}"
-      >
-
-      </v-list-item>
-        
-    </v-navigation-drawer>
-
-  </template>
-  
-</v-app-bar> -->
-
-
 <v-app-bar>
-
-  
-
   <v-app-bar-nav-icon
   @click.stop="drawer = !drawer">
 
@@ -67,7 +48,7 @@
 
 
 import axios from 'axios';
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 const user = ref({
   name: null, 
@@ -94,7 +75,7 @@ const get_user = async () => {
   
 
 }
+onMounted(()=>{get_user()})
 
-get_user();
 
 </script>

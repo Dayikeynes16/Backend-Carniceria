@@ -39,9 +39,8 @@ class AuthController extends Controller
     }
 
     public function get_user(Request $request){
-        
         $id = $request->user()->id;
-        $user = User::find($id)->with('direcciones')->first();
+        $user = User::with('direcciones')->find($id);
 
         return response()->json($user);
 

@@ -1,6 +1,8 @@
 <template>
     <v-container>
-        <v-card>
+        <v-row>
+            <v-col cols="6">
+                <v-card>
             <v-card-title v-text="'Actualizar Producto'">
             </v-card-title>
             <v-card-text>
@@ -14,6 +16,12 @@
                 </v-btn>
             </v-card-text>
         </v-card>
+
+            </v-col>
+            
+
+        </v-row>
+        
     </v-container>
 
 

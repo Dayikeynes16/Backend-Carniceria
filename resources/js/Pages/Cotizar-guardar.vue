@@ -1,5 +1,7 @@
 <template>
-
+      <Navbar>
+        
+    </Navbar>
     <v-container>
         <v-row>
             <v-col cols="4">
@@ -71,6 +73,7 @@ const errorMessage = ref('');
 import { useRouter } from 'vue-router';
 const router = useRouter()
 const archivos = []
+import Navbar from '../Components/Navbar.vue';
 
 
 

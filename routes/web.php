@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DireccionesController;
 use App\Http\Controllers\ModelsController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\QuoteController;
@@ -13,13 +14,13 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware'=>['auth']],function(){
-    route::post('/guardarDireccion', [ProductsController::class,'guardarDireccion']);
-    route::post('/eliminarDireccion',[ProductsController::class,'eliminarDireccion']);
+    route::post('/guardarDireccion', [DireccionesController::class,'guardarDireccion']);
+    route::post('/eliminarDireccion',[DireccionesController::class,'eliminarDireccion']);
     route::post('/eliminarProducto', [ProductsController::class, 'eliminarProducto']);
     route::get('/get_user', [AuthController::class, 'get_user']);
     route::post('/deletefile', [QuoteController::class, 'deletefile']);
     route::post('/calculate', [QuoteController::class, 'calculate']);
-    route::get('/getDirecciones', [ProductsController::class, 'getDirecciones']);
+    route::get('/getDirecciones', [DireccionesController::class, 'getDirecciones']);
     route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
     route::get('/modelos', [ProductsController::class, 'Modelos']);
     route::post('/savemodel', [ProductsController::class, 'StoreProduct']);
