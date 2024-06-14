@@ -10,11 +10,15 @@ use PhpParser\Node\Expr\New_;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable=['name', 'description', 'image', 'price'];
+    protected $fillable=['name', 'description',  'price', 'codigo_postal', 'estado'];
 
-    public function url (): Attribute{
-        return new Attribute(get: fn()=>route('products.image', $this));
+    
+
+    public function Imagenes(){
+        return $this->hasMany(Images::class,'producto_id');
     }
 
-    protected $appends=['url'];
+    
+
+  
 }

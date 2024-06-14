@@ -25,12 +25,14 @@
                     </v-card-title>
                     <v-card-text>
                         
-                        <v-container>
+                     
                             <listaDirecciones ></listaDirecciones>
 
-                        </v-container>
 
                     </v-card-text>
+                    <v-card-actions>
+                        <v-btn class="ma-2" color="#4D869C"  @click="router.push({name:'Direcciones'})">añadir<v-icon icon="mdi-Plus-box"></v-icon></v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-col>
 
@@ -45,6 +47,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 
 import listaDirecciones from '../Components/listaDirecciones.vue';
+import router from '../router';
 
 const user = ref({
     name: null,

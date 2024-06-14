@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DireccionesController;
+use App\Http\Controllers\ImagenesController;
 use App\Http\Controllers\ModelsController;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\ProductosController;
+use App\Http\Controllers\ArchivosController;
+use App\Http\Controllers\CarritoController;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -16,19 +18,25 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware'=>['auth']],function(){
     route::post('/guardarDireccion', [DireccionesController::class,'guardarDireccion']);
     route::post('/eliminarDireccion',[DireccionesController::class,'eliminarDireccion']);
-    route::post('/eliminarProducto', [ProductsController::class, 'eliminarProducto']);
+    route::post('/eliminarProducto', [ProductosController::class, 'eliminarProducto']);
     route::get('/get_user', [AuthController::class, 'get_user']);
-    route::post('/deletefile', [QuoteController::class, 'deletefile']);
-    route::post('/calculate', [QuoteController::class, 'calculate']);
+    route::post('/deletefile', [ArchivosController::class, 'deletefile']);
+    route::post('/calculate', [ArchivosController::class, 'calculate']);
     route::get('/getDirecciones', [DireccionesController::class, 'getDirecciones']);
     route::get('/traerarchivos', [ModelsController::class, 'traerarchivos']);
-    route::get('/modelos', [ProductsController::class, 'Modelos']);
-    route::post('/savemodel', [ProductsController::class, 'StoreProduct']);
-    Route::get('/productos/{producto}',[ModelsController::class,'show']);
-    Route::post('/productos/{producto}',[ModelsController::class,'update']);
-
+    route::get('/modelos', [ProductosController::class, 'traerProductos']);
+    route::post('/savemodel', [ProductosController::class, 'StoreProduct']);
+    Route::get('/productos/{producto}',[ProductosController::class,'show']);
+    Route::post('/productos/{producto}',[ProductosController::class,'update']);
+    Route::post('/guardarImagen', [ImagenesController::class, 'guardarImagen']);
+    Route::get('/getImagenes',[ImagenesController::class, 'getImagenes']);
+    Route::post('/eliminarImagen', [ImagenesController::class, 'eliminarImagen']);
+    Route::post('/añadirCarrito',[CarritoController::class,'añadirCarrito']);
+    Route::post('/cerrarSesion',[AuthController::class, 'cerrarSesion']);
+    Route::get('/traerCarrito',[CarritoController::class,'traerCarrito']);
 });
 
+Route::get('/auth',[AuthController::class, 'auth']);
 route::post('/login', [AuthController::class, 'login']);
 route::post('/usuarios', function (Request $request) {
     $request->validate([
@@ -43,7 +51,7 @@ route::post('/usuarios', function (Request $request) {
     ],200);
 });
 
-route::get('/products/{product}/image', [ProductsController::class, 'image'])->name('products.image');
+route::get('/images/{image}/image', [ImagenesController::class, 'showImage'])->name('images.image');
 route::get('/{any}', function (): View {
     return view('welcome');
 })->where('any', '.*');

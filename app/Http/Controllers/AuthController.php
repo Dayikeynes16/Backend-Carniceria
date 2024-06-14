@@ -45,5 +45,22 @@ class AuthController extends Controller
         return response()->json($user);
 
     }
+
+    public function cerrarSesion(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+    }
+
+    public function auth(Request $request){
+        $user = $request->user();
+
+        if($user){
+            return response('200');
+        }else{
+            return response('404');
+        }
+    }
     
 }

@@ -1,14 +1,41 @@
 <template>
-    <v-card v-if="visible">
-        <v-card v-for="direccion in direcciones">
-            <v-card-title v-text="direccion.direccion">
-            </v-card-title>
-            <v-card-actions>
-                <v-btn @click="eliminarDireccion(direccion.id)"> <v-icon icon="mdi-delete"></v-icon></v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-card>
-    <v-text v-if="visible !==true" > Parece ser que no has registrado ninguna dirección aun, <router-link :to="'/direcciones'">
+
+    <v-card-text v-if="visible">
+
+        <v-expansion-panels variant="popout">
+            <v-expansion-panel v-for="direccion in direcciones">
+
+                <v-expansion-panel-title>
+                    {{ direccion.nombre }}
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
+
+                    <v-card-text>
+                        <h8> Direccion: {{ direccion.direccion }} </h8>
+                        <v-divider>
+                        </v-divider>
+                        <h8>Destinatario: {{ direccion.destinatario }}</h8>
+                        <v-divider></v-divider>
+                        <h8>Telefono: {{ direccion.telefono }}</h8>
+                        <v-divider></v-divider>
+                        <h8>Referencias: {{ direccion.referencias }}</h8>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn icon="mdi-delete" @click="open(direccion.id)" ></v-btn>
+
+
+
+
+                    </v-card-actions>
+
+                </v-expansion-panel-text>
+
+            </v-expansion-panel>
+        </v-expansion-panels>
+    </v-card-text>
+
+    <v-text v-if="visible !== true"> Parece ser que no has registrado ninguna dirección aun, <router-link
+            :to="'/direcciones'">
             haz click para añadir una </router-link></v-text>
 
 
@@ -21,15 +48,16 @@ import axios from 'axios'
 const direcciones = ref([])
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
 const visible = ref(false)
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 
 const getDirecciones = async () => {
     try {
         const { data } = await axios.get("/getDirecciones")
-      
+
         direcciones.value = data
         if (direcciones.value.length > 0) {
-            visible.value=true
+            visible.value = true
         }
     } catch (error) {
 
@@ -45,9 +73,34 @@ const eliminarDireccion = async (id) => {
         }
     })
     direcciones.value = direcciones.value.filter((direccion) => direccion.id !== id)
-    if (direcciones.value.length === 0){
+    if (direcciones.value.length === 0) {
         visible.value = false
     }
+}
+
+const open = (id) => {
+    ElMessageBox.confirm(
+        'proxy will permanently delete the file. Continue?',
+        'Warning',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            ElMessage({
+                type: 'success',
+                message: 'Delete completed',
+            })
+            eliminarDireccion(id)
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        })
 }
 
 

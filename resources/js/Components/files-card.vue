@@ -22,7 +22,7 @@
            <v-btn
            v-model="form.id"
             icon="mdi-delete-outline"
-            @click="eliminarArchivo(file.id)"
+            @click="open(file.id)"
             ></v-btn>
 
         </v-card-actions>
@@ -68,7 +68,7 @@ const orden = ref({
     files : []
 })
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
-
+import { ElMessage, ElMessageBox } from 'element-plus'
 const visible = ref(false)
 const correcto = ref(false)
 const total = ref(0)
@@ -85,8 +85,6 @@ const traerarchivos = async () => {
     
 
     correcto.value = true;
-
- 
     calcularTotal()
     
   } catch (error) {
@@ -114,6 +112,30 @@ onMounted(async()=>{
     await traerarchivos()
 })
 
+const open = (id) => {
+  ElMessageBox.confirm(
+    '¿Esta seguro de eliminar?',
+    'Confirmar',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancelar',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      ElMessage({
+        type: 'success',
+        message: 'Elemento eliminado',
+      })
+      eliminarArchivo(id)
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Cancelado',
+      })
+    })
+}
 
 
 

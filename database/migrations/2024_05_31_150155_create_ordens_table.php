@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->decimal('total');
-            $table->boolean('pagado');
+            $table->string('status')->default('activo');
             $table->foreignId('usuario_id')->constrained('users','id');
+            $table->foreignId('carrito_id')->nullable()->constrained('carritos','id');
+        
         });
     }
 

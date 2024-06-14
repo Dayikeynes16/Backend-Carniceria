@@ -11,6 +11,9 @@ import EditarCatalogo from './Pages/EditarCatalogo.vue'
 import Cuenta from './Pages/Cuenta.vue'
 import Direcciones from './Pages/Direcciones.vue'
 import editarModelo from './Pages/editarModelo.vue'
+import DetallesModelo from './Pages/DetallesModelo.vue'
+import GuardarProducto from './Pages/GuardarProducto.vue'
+
 
 const routes = [{
     name: 'register',
@@ -48,6 +51,14 @@ const routes = [{
     name: 'editarModelo',
     path: '/modelos/:id/editar',
     component: editarModelo
+},{
+    name: 'DetallesModelo', 
+    path: '/DetallesModelos/:id/detalles',
+    component: DetallesModelo
+},{
+    name: 'GuardarProducto',
+    path: '/Guardarproducto',
+    component: GuardarProducto
 }
 ]
 

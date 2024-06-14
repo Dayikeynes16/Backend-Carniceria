@@ -19,7 +19,9 @@ return new class extends Migration
             $table->decimal('ancho', 8,2)->nullable();
             $table->string('image')->nullable(); 
             $table->decimal('price', 8, 2);
+          
             $table->timestamps();
+            
         });
     }
 

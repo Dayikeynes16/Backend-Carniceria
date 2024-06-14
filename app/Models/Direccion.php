@@ -9,7 +9,7 @@ class Direccion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['destinatario', 'direccion','telefono','referencias', 'usuario_id'];
+    protected $fillable = ['destinatario', 'direccion','telefono','referencias', 'usuario_id', 'nombre','codigo_postal','estado'];
 
     public $timestamps = false;
 

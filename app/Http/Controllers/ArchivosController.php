@@ -10,12 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class QuoteController extends Controller
+class ArchivosController extends Controller
 {
-    public function testing()
-    {
-        return view('example');
-    }
 
     public function calculate(request $request)
     {
@@ -29,11 +25,11 @@ class QuoteController extends Controller
             $response = $this->apiRequest($request->file('file'));
 
             $orden = Orden::firstOrCreate([
-                'pagado' => false,
+                'status' => 'activo',
                 'usuario_id' => $request->user()->id
             ], [
                 'total' => 0,
-                'pagado'=> false
+                'status'=> 'activo'
             ]);
 
             $file = $orden->files()->create([

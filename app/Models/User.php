@@ -53,4 +53,8 @@ class User extends Authenticatable
     public function direcciones(){
         return $this->hasMany(Direccion::class,'usuario_id');
     }
+
+    public function carrito(){
+        return $this->hasMany(Carrito::class,'usuario_id');
+    }
 }
