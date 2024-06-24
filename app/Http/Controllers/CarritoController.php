@@ -3,47 +3,177 @@
 namespace App\Http\Controllers;
 
 use App\Models\Carrito;
+use App\Models\Files;
+use App\Models\Orden;
 use App\Models\Product;
 use App\Models\Producto_Carrito;
 use Illuminate\Http\Request;
 
 class CarritoController extends Controller
 {
-    //
-    public function añadirCarrito(Request $request){
-        
-
+    
+    public function añadirCarrito(Request $request)
+    {
         $producto = Product::find($request->input('id'));
-        // return response($producto);
-        
-        $carrito = Carrito::firstorCreate([
-            'status' => 'activo',
-            'usuario_id' => $request->user()->id
-        ],[
-             'total' => 0,
-                'status'=> 'activo',
-                'direccion_id'=> null
-        ]);
+        $cantidad = $request->input('cantidad');
+
+
+
+        if (!$producto) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        $carrito = Carrito::firstOrCreate(
+            [
+                'status' => 'activo',
+                'usuario_id' => $request->user()->id
+            ],
+            [
+                'total' => 0,
+                'status' => 'activo',
+                'direccion_id' => null
+            ]
+        );
 
         $productoCarrito = Producto_Carrito::create([
-            'producto_id'=>$producto->id,
-            'carrito_id'=>$carrito->id,
-            'total'=>$producto->price
+            'producto_id' => $producto->id,
+            'carrito_id' => $carrito->id,
+            'total' => $producto->price * $cantidad,
+            'cantidad' => $cantidad
         ]);
-        $productoCarrito->save();
 
-        $carrito->total = $producto->price;
-        $carrito->save();
-        return response($carrito);
+        $this->calcularCarrito($carrito->id);
+
+        return response()->json($carrito);
+    }
+
+    public function obtenerCarrito($user_id)
+    {
+        $carrito = Carrito::with('productosCarritos.producto','orden.files')->firstorCreate([
+            'status' => 'activo',
+            'usuario_id' => $user_id
+        ], [
+            'total' => 0,
+            'status' => 'activo',
+            'direccion_id' => null
+        ]);
+        return $carrito;
+    }
+
+    public function traerCarrito(Request $request)
+    {
+
+        $user = $request->user()->id;
+        $carrito = $this->obtenerCarrito($user);
+        return response()->json($carrito);
+    }
+
+    public function borrarProducto(Request $request)
+    {
+        $producto = Producto_Carrito::find($request->input('id'))->first();
+        $carritoId = $producto->carrito_id;
+        $producto->delete();
+        $this->calcularCarrito($carritoId);
+        return response()->json('exito');
+    }
+    public function actualizar(Request $request)
+    {
+        $productoCarrito = Producto_Carrito::with('producto')->find($request->input('id'));
+        $producto = Product::find($productoCarrito->producto_id);
+        $productoCarrito->cantidad = $request->input('cantidad');
+        $productoCarrito->total = $productoCarrito->cantidad * $producto->price;
+        $productoCarrito->save();
+        $this->calcularCarrito($productoCarrito->carrito_id);
+
+        return response('exito');
+    }
+
+    public function calcularCarrito($id)
+    {
+        $carrito = Carrito::with('productosCarritos.producto', 'orden.files')->find($id);
+
+        if ($carrito) {
+            $total = 0;
+
+         
+            foreach ($carrito->productosCarritos as $item) {
+                $total += $item->producto->price * $item->cantidad;
+            }
+
+
+
+          
+            foreach ($carrito->orden as $orden) {
+                foreach ($orden->files as $file) {
+                    $total += $file->precio;
+                }
+            }
+
+            $carrito->total = $total;
+            $carrito->save();
+        }
+    }
+    
+
+    public function añadirStlCarrito( Request $request){
+        $orden = Orden::with('files')->find($request->input('id'));
+        $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();  
+        $orden->status = 'inactivo';
+        $orden->carrito_id = $carrito->id;
+        $orden->save();
+        $this->calcularCarrito($carrito->id);
+        return response()->json(['orden'=>$orden, '$carrito'=>$carrito]);
+
     }
 
 
+    public function actualizarFileCarrito(Request $request)
+    {
+        $file = Files::find($request->input('id'));
 
+        if ($file) {
+            $precioUnitario = $file->precio / $file->cantidad;
 
-    public function traerCarrito(Request $request){
+            $file->cantidad = $request->input('cantidad');
+            $file->precio = $file->cantidad * $precioUnitario;
 
-        $user = $request->user()->id;
-        $carrito = Carrito::with('productosCarritos')->where('usuario_id',$user)->first();
-        return response($carrito);
+            $file->save();
+
+            $carrito = Carrito::whereHas('orden', function($query) use ($file) {
+                $query->where('id', $file->orden_id);
+            })->first();
+
+            
+
+            if ($carrito) {
+                
+                $this->calcularCarrito($carrito->id);
+              
+            }
+
+            return response('exito');
+        } else {
+            return response('Error: No se encontró el archivo', 404);
+        }
+
+       
+    }
+
+    public function finalizarCarrito(Request $request){
+        $carrito = Carrito::find($request->input('id'));
+        $carrito->status = 'pagada';
+        $carrito->save();
+        return response('todo bien');
+
+    }
+
+    public function getCarritosPendientes(){
+        $carritos = Carrito::with('usuario','orden.files','productosCarritos')->where('status', 'pagada')->get();
+        return response($carritos);
+    }
+
+    public function show($id){
+        $carritos = Carrito::with('usuario','orden.files','productosCarritos')->find($id);
+        return response($carritos);
     }
 }

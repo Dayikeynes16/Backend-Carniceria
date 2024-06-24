@@ -45,6 +45,7 @@ class ImagenesController extends Controller
 
         if($imagen){
             $imagen->delete();
+            Storage::delete($imagen->path);
             return response()->json(['data'=>'eliminado con exito']);
         }else{
             return response()->json(['error'=>'imagen no encontrada']);

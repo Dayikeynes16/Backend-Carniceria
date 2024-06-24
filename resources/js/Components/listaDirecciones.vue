@@ -1,43 +1,48 @@
 <template>
-
+<v-container class="text-center">
     <v-card-text v-if="visible">
 
-        <v-expansion-panels variant="popout">
-            <v-expansion-panel v-for="direccion in direcciones">
+<v-expansion-panels variant="popout">
+    <v-expansion-panel v-for="direccion in direcciones">
 
-                <v-expansion-panel-title>
-                    {{ direccion.nombre }}
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
+        <v-expansion-panel-title>
+            {{ direccion.nombre }}
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
 
-                    <v-card-text>
-                        <h8> Direccion: {{ direccion.direccion }} </h8>
-                        <v-divider>
-                        </v-divider>
-                        <h8>Destinatario: {{ direccion.destinatario }}</h8>
-                        <v-divider></v-divider>
-                        <h8>Telefono: {{ direccion.telefono }}</h8>
-                        <v-divider></v-divider>
-                        <h8>Referencias: {{ direccion.referencias }}</h8>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn icon="mdi-delete" @click="open(direccion.id)" ></v-btn>
+            <v-card-text>
+                <h8> Direccion: {{ direccion.direccion }} </h8>
+                <v-divider>
+                </v-divider>
+                <h8>Destinatario: {{ direccion.destinatario }}</h8>
+                <v-divider></v-divider>
+                <h8>Telefono: {{ direccion.telefono }}</h8>
+                <v-divider></v-divider>
+                <h8>Referencias: {{ direccion.referencias }}</h8>
+            </v-card-text>
+            <v-card-actions>
+                <v-row>
+                    <v-col cols="6">
+                        <v-icon color="danger" class="text-left" icon="mdi-delete" @click="open(direccion.id)" ></v-icon>
+
+                    </v-col>
+                    <v-col class="text-right" cols="6">
+                        <v-icon icon="mdi-Pencil"></v-icon>
+
+                    </v-col>
+                </v-row>
+            </v-card-actions>
+        </v-expansion-panel-text>
+    </v-expansion-panel>
+</v-expansion-panels>
+</v-card-text>
+<v-text v-if="empty"> Parece ser que no has registrado ninguna dirección aun, <router-link
+    :to="'/direcciones'">
+    haz click para añadir una </router-link></v-text>
 
 
-
-
-                    </v-card-actions>
-
-                </v-expansion-panel-text>
-
-            </v-expansion-panel>
-        </v-expansion-panels>
-    </v-card-text>
-
-    <v-text v-if="visible !== true"> Parece ser que no has registrado ninguna dirección aun, <router-link
-            :to="'/direcciones'">
-            haz click para añadir una </router-link></v-text>
-
+</v-container>
+    
 
 </template>
 
@@ -48,6 +53,7 @@ import axios from 'axios'
 const direcciones = ref([])
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
 const visible = ref(false)
+const empty = ref(false)
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 
@@ -74,8 +80,9 @@ const eliminarDireccion = async (id) => {
     })
     direcciones.value = direcciones.value.filter((direccion) => direccion.id !== id)
     if (direcciones.value.length === 0) {
-        visible.value = false
-    }
+      empty.value = true    } else {
+        empty.value = false
+      }
 }
 
 const open = (id) => {

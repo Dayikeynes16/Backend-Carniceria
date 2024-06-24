@@ -1,9 +1,7 @@
 <template>
-    <v-card>
-        <v-card-title>
-            {{ item.name }}
-        </v-card-title>
-        <v-card-text>
+   
+        
+        <v-card>
 
             <v-carousel show-arrows="hover" cycle>
 
@@ -15,7 +13,10 @@
             </v-carousel>
 
 
-        </v-card-text>
+ 
+        <v-card-title>
+            {{ item.name }}
+        </v-card-title>
         <v-card-actions>
             <v-btn v-text="'Eliminar'" @click="open(item.id)">
             </v-btn>
@@ -28,6 +29,7 @@
             </v-btn>
         </v-card-actions>
     </v-card>
+ 
 
 </template>
 <script setup>

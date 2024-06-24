@@ -16,7 +16,7 @@ class Producto_Carrito extends Model
     }
 
     public function producto(){
-        return $this->hasOne(Product::class,'producto_id');
+        return $this->belongsTo(Product::class,'producto_id');
     }
     protected $table = 'producto_carritos';
 

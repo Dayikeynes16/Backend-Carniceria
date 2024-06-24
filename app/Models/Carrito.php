@@ -18,5 +18,12 @@ class Carrito extends Model
         return $this->hasMany(Producto_Carrito::class,'carrito_id');
     }
 
+    public function orden(){
+        return $this->hasMany(Orden::class,'carrito_id');
+    }
+
+    public function usuario(){
+        return $this->belongsTo(User::class,'usuario_id');
+    }
     
 }

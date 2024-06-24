@@ -85,12 +85,13 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value');
 const errorMessages = ref({});
 const items = ref(['Paso 1', 'Paso 2']);
 const step = ref(1);
-const router = useRouter();
+
 
 const visible = ref(false)
 

@@ -58,7 +58,6 @@
                             <v-img :src="imagen.url">
                             </v-img>
                             <v-card-actions>
-                                <v-btn circle> <v-icon icon="mdi-Delete-outline"></v-icon> </v-btn>
                                 <el-button type="danger" :icon="Delete" circle @click="eliminarImagen(imagen.id)" />
                             </v-card-actions>
                         </v-card>
@@ -149,7 +148,7 @@ const guardarImagen = async (file) => {
     formData.append('image', file.file);
     formData.append('producto_id', id.value);
 
-    console.log('Producto ID:', id.value); // Verifica que esto tenga el valor correcto
+    console.log('Producto ID:', id.value);
 
     try {
         const { data } = await axios.post('/guardarImagen', formData, {

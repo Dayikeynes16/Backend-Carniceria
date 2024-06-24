@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-        <v-col cols="6">
+    <v-container class="text-center">
+        <v-col >
             <v-card>
                 <v-container>
                     <v-form @submit.prevent="guardarDireccion()">

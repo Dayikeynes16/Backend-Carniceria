@@ -7,6 +7,13 @@ use App\Models\User;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB as FacadesDB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -63,4 +70,83 @@ class AuthController extends Controller
         }
     }
     
+    public function enviarRecuperarContraseña(Request $request)
+    {
+        Log::info('Iniciando proceso de recuperación de contraseña');
+
+        try {
+       
+            $request->validate([
+                'email' => 'required|email|exists:users',
+            ]);
+            Log::info('Validación de email completada para: ' . $request->email);
+
+      
+            $token = Str::random(64);
+            Log::info('Token generado: ' . $token);
+
+         
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            Log::info('Tokens existentes eliminados para el email: ' . $request->email);
+
+ 
+            DB::table('password_reset_tokens')->insert([
+                'email' => $request->email,
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]);
+            Log::info('Nuevo token insertado en la base de datos');
+
+
+            Mail::send('email.recuperar-contrasenia', ['token' => $token], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Recuperar Contraseña');
+            });
+            Log::info('Correo de recuperación enviado a: ' . $request->email);
+
+            return response()->json(['message' => 'Te hemos enviado un email con las instrucciones para que recuperes tu contraseña']);
+        } catch (\Exception $e) {
+            Log::error('Error en enviarRecuperarContraseña: ' . $e->getMessage());
+            return response()->json(['message' => 'Ocurrió un error al procesar la solicitud.'], 500);
+        }
+    }
+
+    public function formularioActualizacion($token)
+    {
+        return view('formulario-actualizacion', ['token' => $token]);
+    }
+
+
+    public function actualizarContrasenia(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'required|email|exists:users',
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required'
+        ]);
+
+        $updatePassword = DB::table('password_reset_tokens')
+            ->where([
+                'email' => $request->email,
+                'token' => $request->token
+            ])
+            ->first();
+
+    
+        if (!$updatePassword) {
+            return back()->withInput()->with('error', 'Token inválido');
+        }
+
+
+        $user = User::where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+
+  
+        DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
+
+        return redirect('/login')->with('message', 'Tu contraseña se ha cambiado correctamente');
+    }
 }
+

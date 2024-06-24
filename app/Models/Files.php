@@ -11,7 +11,7 @@ class Files extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'path', 'minutos', 'precio', 'orden_id'];
+    protected $fillable = ['nombre', 'path', 'minutos', 'precio', 'orden_id','cantidad'];
 
     protected $casts = ['precio'=>'float'];
 

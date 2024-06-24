@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FileRequest;
+use App\Models\Carrito;
 use App\Models\Files;
 use App\Models\Orden;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+
 
 class ArchivosController extends Controller
 {
@@ -76,14 +78,43 @@ class ArchivosController extends Controller
     public function deletefile(Request $request){
         $id = $request->input('id');
         $file = Files::find($id);
+        $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();  
+
     
         if ($file) {
             Storage::delete($file->path);
+      
             $file->delete();
+            $this->calcularCarrito($carrito->id);
             return response()->json(['data' => 'eliminado con exito']);
         } else {
             return response()->json(['error' => 'Archivo no encontrado'], 404);
         }
     }
     
+    public function calcularCarrito($id)
+    {
+        $carrito = Carrito::with('productosCarritos.producto', 'orden.files')->find($id);
+
+        if ($carrito) {
+            $total = 0;
+
+         
+            foreach ($carrito->productosCarritos as $item) {
+                $total += $item->producto->price * $item->cantidad;
+            }
+
+
+
+          
+            foreach ($carrito->orden as $orden) {
+                foreach ($orden->files as $file) {
+                    $total += $file->precio;
+                }
+            }
+
+            $carrito->total = $total;
+            $carrito->save();
+        }
+    }
 }

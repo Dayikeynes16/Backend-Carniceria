@@ -18,6 +18,10 @@ class Product extends Model
         return $this->hasMany(Images::class,'producto_id');
     }
 
+    public function productoCarritos(){
+        return $this->hasMany(Producto_Carrito::class,'producto_id');
+    }
+
     
 
   

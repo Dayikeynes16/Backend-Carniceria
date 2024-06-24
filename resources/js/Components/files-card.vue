@@ -44,11 +44,14 @@
         </v-card-title>
         <v-card-text>
             Total: {{ Intl.NumberFormat("es-MX", { 
-                type: 'currency', 
+                style: 'currency', 
                 currency: 'MXN',
                 minimumFractionDigits: 2
             }).format(total) }}
         </v-card-text>
+        <v-card-actions>
+          <v-btn @click="añadirCarrito(orden.id)" icon="mdi-cart"></v-btn>
+        </v-card-actions>
     </v-card>
 
     </v-col>
@@ -65,8 +68,14 @@
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 const orden = ref({
+    id: null,
     files : []
 })
+const props = defineProps({item:Object})
+const emit = defineEmits([
+    'añadido'
+])
+
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value')
 import { ElMessage, ElMessageBox } from 'element-plus'
 const visible = ref(false)
@@ -80,10 +89,8 @@ const form = ref({
 const traerarchivos = async () => {
   try {
     const { data } = await axios.get('/traerarchivos');
-
+  
     orden.value = data.data;
-    
-
     correcto.value = true;
     calcularTotal()
     
@@ -136,6 +143,16 @@ const open = (id) => {
       })
     })
 }
+
+const añadirCarrito = async (id) =>{
+  const {data} = axios.post('/añadirStlCarrito',{ id},{headers:{
+            'X-CSRF-TOKEN': token}
+        });
+        emit('añadido')
+        console.log(data)
+}
+
+
 
 
 

@@ -9,10 +9,15 @@ import component from 'element-plus/es/components/tree-select/src/tree-select-op
 import Catalogo from './Pages/Catalogo.vue'
 import EditarCatalogo from './Pages/EditarCatalogo.vue'
 import Cuenta from './Pages/Cuenta.vue'
-import Direcciones from './Pages/Direcciones.vue'
+import Direcciones from './Components/Direcciones.vue'
 import editarModelo from './Pages/editarModelo.vue'
 import DetallesModelo from './Pages/DetallesModelo.vue'
 import GuardarProducto from './Pages/GuardarProducto.vue'
+import ProcesarCarrito from './Pages/ProcesarCarrito.vue'
+import CarritoFinal from './Pages/CarritoFinal.vue'
+import recuperarContraseña from './Pages/recuperarContraseña.vue'
+import Dashboard from './Pages/adminPages/Dashboard.vue'
+import pedidoDetalles from './Pages/adminPages/pedidoDetalles.vue'
 
 
 const routes = [{
@@ -59,6 +64,26 @@ const routes = [{
     name: 'GuardarProducto',
     path: '/Guardarproducto',
     component: GuardarProducto
+},{
+    name: 'ProcesarCarrito',
+    path: '/ProcesarCarrito',
+    component: ProcesarCarrito
+},{
+    name: 'CarritoFinal',
+    path: '/CarritoFinal',
+    component: CarritoFinal
+},{
+    name: 'recuperarContraseña',
+    path: '/recuperarContraseña',
+    component: recuperarContraseña
+},{
+    name: 'Dashboard',
+    path: '/Dashboard',
+    component: Dashboard
+},{
+    name: 'PedidoDetalle',
+    path: '/PedidoDetalle/:id/detalles',
+    component: pedidoDetalles
 }
 ]
 

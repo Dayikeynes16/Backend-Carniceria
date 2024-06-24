@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Orden extends Model
 {
     use HasFactory;
-    protected $fillable = ['status', 'usuario_id', 'total'];
+    protected $fillable = ['status', 'usuario_id', 'total','carrito_id'];
 
     protected $table = 'ordenes';
 
     
     public function files (){
         return $this->hasMany(Files::class, 'orden_id');
+    }
+    public function carrito(){
+        return $this->belongsTo(Carrito::class,'carrito_id');
     }
     
 }
