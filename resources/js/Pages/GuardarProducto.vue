@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="4">
+      <v-col cols="12">
         <v-stepper v-model="step" :items="items" hide-actions>
           <template v-slot:item.1>
             <v-card>
@@ -29,8 +29,40 @@
           </template>
           <template v-slot:item.2>
             <v-container>
+              <v-card-title>
+              Imagenes del producto
+              </v-card-title>
               <v-card-text>
                 <el-upload class="upload-demo" drag :http-request="guardarImagen" ref='loadform'
+                  accept=".jpeg,.jpg,.png,.gif" :headers="{
+                    'X-CSRF-TOKEN': token
+                  }" :auto-upload="true">
+                  <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                  <div class="el-upload__text">
+                    Arrastra las imagenes del producto o <em>haz click para subir</em>
+                  </div>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      Archivos de imagen de menos de 30 MB
+                    </div>
+                  </template>
+                </el-upload>
+              </v-card-text>
+              <v-card-actions >
+                <v-col cols="10"></v-col>
+                <v-col cols="2">
+                  <v-btn @click="siguientePaso()">Siguiente</v-btn>
+                </v-col>
+                 
+
+              
+              </v-card-actions>
+            </v-container>
+          </template>
+          <template  v-slot:item.3>
+            <v-card-title>Sube los archivos correspondientes al modelo</v-card-title>
+            <v-card-text>
+                <el-upload class="upload-demo" drag :http-request="guardarSTL" ref='loadform'
                   accept=".jpeg,.jpg,.png,.gif" :headers="{
                     'X-CSRF-TOKEN': token
                   }" :auto-upload="true">
@@ -45,10 +77,8 @@
                   </template>
                 </el-upload>
               </v-card-text>
-              <v-card-actions>
-                <v-btn @click="router.push({name:'editarcatalogo'})">Finalizar</v-btn>
-              </v-card-actions>
-            </v-container>
+
+
           </template>
 
         </v-stepper>
@@ -89,7 +119,7 @@ const router = useRouter();
 
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value');
 const errorMessages = ref({});
-const items = ref(['Paso 1', 'Paso 2']);
+const items = ref(['Paso 1', 'Paso 2', 'paso 3']);
 const step = ref(1);
 
 
@@ -100,6 +130,10 @@ const form = ref({
   description: null,
   price: null
 });
+
+const siguientePaso = () =>{
+  step.value = step.value + 1
+}
 
 
 const Producto = ref({
@@ -149,6 +183,29 @@ const guardarImagen = async (file) => {
     console.error(error);
   }
 };
+
+const guardarSTL = async(file) =>{
+
+  const formData = new FormData();
+  formData.append('file', file.file);
+  formData.append('producto_id', Producto.value.producto_id);
+
+  try {
+    const { data } = await axios.post('/guardarSTLproducto', formData, {
+      headers: {
+        'X-CSRF-TOKEN': token,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    Producto.value.imagenes.push(data.data)
+
+    visible.value= true
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 const eliminarImagen = async(id) =>{
   try {

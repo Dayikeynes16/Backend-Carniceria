@@ -8,7 +8,6 @@
                 <thead>
                     <tr>
                         <th class="text-left">N. Orden</th>
-                      
                         <th class="text-left">Correo</th>
                         <th class="text-left">Estatus</th>
                         <th class="text-center"><v-icon icon="mdi-Card-Search"></v-icon></th>

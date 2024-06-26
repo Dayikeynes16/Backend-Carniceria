@@ -62,7 +62,9 @@ Route::group(['middleware' => ['auth']], function(){
 
     Route::get('/getCarritosPendientes', [CarritoController::class, 'getCarritosPendientes']);
     Route::get('/carrito/{carrito}',[CarritoController::class, 'show']);
-});
+
+    Route::get('/DownloadFile/{id}', [ArchivosController::class, 'downloadFile']);});
+    Route::post('/guardarSTLproducto',[ArchivosController::class, 'guardarSTLproducto']);
 
 Route::get('/auth', [AuthController::class, 'auth']);
 Route::post('/login', [AuthController::class, 'login']);

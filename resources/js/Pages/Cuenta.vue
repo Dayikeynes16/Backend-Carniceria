@@ -23,22 +23,11 @@
                     <v-card-text>
                         <listaDirecciones></listaDirecciones>
                     </v-card-text>
-                    <v-card-actions>
-                        <!-- <v-btn
-                            class="ma-2"
-                            color="#4D869C"
-                            @click="dialog = true"
-                            >añadir<v-icon icon="mdi-Plus-box"></v-icon
-                        ></v-btn> -->
-
-                        <v-btn class="ma-2" color="#4D869C"  @click="router.push({name:'Direcciones'})">añadir<v-icon icon="mdi-Plus-box"></v-icon></v-btn>
-                    </v-card-actions>
+                   
                 </v-card>
             </v-col>
         </v-row>
-        <v-dialog v-model="dialog" class="text-center">
-        <Direcciones></Direcciones>
-    </v-dialog>
+
     </v-container>
 
  
@@ -50,7 +39,7 @@ import axios from "axios";
 import Direcciones from "../Components/Direcciones.vue";
 import listaDirecciones from "../Components/listaDirecciones.vue";
 import router from "../router";
-const dialog = ref(false)
+
 const user = ref({
     name: null,
     correo: null,

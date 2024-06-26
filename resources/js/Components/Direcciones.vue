@@ -34,6 +34,9 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+const props = defineProps({ item: Object });
+const emit = defineEmits(["añadido"]);
+
 
 const router = useRouter();
 const token = document.querySelector("meta[name='csrf-token']").getAttribute('value');
@@ -93,7 +96,7 @@ const guardarDireccion = async () => {
 
 
         if (data) {
-            router.push({ name: 'Cuenta' });
+            emit("añadido");
         }
 
     } catch (error) {

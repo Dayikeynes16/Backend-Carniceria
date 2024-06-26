@@ -1,73 +1,60 @@
 <template>
-   
-        
-        <v-card>
+    <v-card>
+        <v-carousel show-arrows="hover" cycle>
+            <v-carousel-item v-for="img in item.imagenes" cover :src="img.url">
+            </v-carousel-item>
+        </v-carousel>
 
-            <v-carousel show-arrows="hover" cycle>
-
-                <v-carousel-item v-for="img in item.imagenes" cover :src="img.url">
-
-
-                </v-carousel-item>
-
-            </v-carousel>
-
-
- 
         <v-card-title>
             {{ item.name }}
         </v-card-title>
         <v-card-actions>
-            <v-btn v-text="'Eliminar'" @click="open(item.id)">
-            </v-btn>
-            <v-btn v-text="'Editar'" @click="router.push({
-                name: 'editarModelo', params: {
-                    id: item.id
-                }
-            })">
+            <v-col class="text-left" cols="6"
+                ><v-icon icon="mdi-delete" @click="open(item.id)"> </v-icon
+            ></v-col>
 
-            </v-btn>
+            <v-col class="text-right" cols="6">
+                <v-icon
+                    icon="mdi-pencil"
+                    @click="
+                        router.push({
+                            name: 'editarModelo',
+                            params: {
+                                id: item.id,
+                            },
+                        })
+                    "
+                >
+                </v-icon>
+            </v-col>
         </v-card-actions>
     </v-card>
- 
-
 </template>
 <script setup>
+import { ElMessage, ElMessageBox } from "element-plus";
+const props = defineProps({ item: Object });
+import router from "../router";
+import { useRouter } from "vue-router";
 
-import { ElMessage, ElMessageBox } from 'element-plus'
-const props = defineProps({item:Object})
-import router from '../router';
-import { useRouter } from 'vue-router';
-
-const emit = defineEmits([
-    'eliminado'
-])
+const emit = defineEmits(["eliminado"]);
 
 const eliminarProducto = async (id) => {
-    const { data } = await axios.post('/eliminarProducto', { id });
+    const { data } = await axios.post("/eliminarProducto", { id });
+};
 
-}
-
-const open = async(id) => {
-
-  try {
-    const confirmed =   await ElMessageBox.confirm(
-        'Borraras permanentemente este producto, ¿Deseas continuar?',
-        'Advertencia',
-        {
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar',
-            type: 'warning',
-        }
-    )
-    await eliminarProducto(id)
-    emit('eliminado')
-  } catch (error) {
-    
-  }
-
-}
-
-
-
+const open = async (id) => {
+    try {
+        const confirmed = await ElMessageBox.confirm(
+            "Borraras permanentemente este producto, ¿Deseas continuar?",
+            "Advertencia",
+            {
+                confirmButtonText: "Eliminar",
+                cancelButtonText: "Cancelar",
+                type: "warning",
+            }
+        );
+        await eliminarProducto(id);
+        emit("eliminado");
+    } catch (error) {}
+};
 </script>

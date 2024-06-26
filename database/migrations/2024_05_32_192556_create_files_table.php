@@ -16,10 +16,11 @@ return new class extends Migration
             $table->timestamps();
             $table->string('nombre');
             $table->string('path');
-            $table->integer('cantidad')->default(1);
-            $table->unsignedInteger('minutos');
-            $table->decimal('precio');
-            $table->foreignId('orden_id')->constrained('ordenes', 'id');
+            $table->integer('cantidad')->default(1)->nullable();
+            $table->unsignedInteger('minutos')->nullable();
+            $table->decimal('precio')->nullable();
+            $table->foreignId('orden_id')->nullable()->constrained('ordenes', 'id');
+            $table->foreignId('producto_id')->nullable()->constrained('ordenes','id');
         });
     }
 

@@ -172,8 +172,20 @@ class CarritoController extends Controller
         return response($carritos);
     }
 
-    public function show($id){
-        $carritos = Carrito::with('usuario','orden.files','productosCarritos')->find($id);
-        return response($carritos);
+    public function show($id)
+    {
+
+        $carritos = Carrito::find($id);
+        $ordenes = Orden::with('files')->where('carrito_id', $id)->get();
+        $producto = Producto_Carrito::with('producto')->where('carrito_id', $id)->get();
+        $files = [];
+
+        foreach ($ordenes as $orden) {
+            foreach ($orden->files as $file) {
+                $files[] = $file;
+            }
+        }
+        return response()->json(['carrito' => $carritos, 'files' => $files, 'productos'=>$producto]);
     }
+    
 }

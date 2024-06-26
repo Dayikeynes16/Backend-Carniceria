@@ -1,10 +1,10 @@
 <template>
-    <v-container>
+
         <v-row>
-            <v-col cols="6">
+            <v-col class="ma-4" cols="6">
                <PedidosPendientesList></PedidosPendientesList>
             </v-col>
-            <v-col cols="6">
+            <v-col class="ma-4" cols="5">
                 <v-card color="">
                     <v-card-title>
                         <v-text>Envios Pendientes</v-text>
@@ -15,7 +15,7 @@
                 </v-card>
             </v-col>
         </v-row>
-    </v-container>
+
 </template>
 
 <script setup>

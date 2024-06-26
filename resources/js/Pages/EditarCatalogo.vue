@@ -1,43 +1,45 @@
 <template>
+    <v-layout class="overflow-visible" style="height: 56px">
+        <v-bottom-navigation v-model="value" active>
+            <v-btn>Home</v-btn>
 
-  <v-layout
-    class="overflow-visible"
-    style="height: 56px;"
-  >
-    <v-bottom-navigation
-      v-model="value"
-      active
-    >
-      <v-btn>Home</v-btn>
+            <v-btn>Recents</v-btn>
 
-      <v-btn>Recents</v-btn>
-
-      <v-btn>Favorites</v-btn>
-    </v-bottom-navigation>
-  </v-layout>
-
+            <v-btn>Favorites</v-btn>
+        </v-bottom-navigation>
+    </v-layout>
 
     <v-container>
-        
         <v-row>
             <v-col cols="2">
-
                 <v-card size="auto">
-                    <v-card-title v-text="'Añadir un nuevo producto'"></v-card-title>
+                    <v-card-title
+                        v-text="'Añadir un nuevo producto'"
+                    ></v-card-title>
                     <v-card-actions>
-                        <v-btn v-text="'Nuevo'" size="auto" @click="router.push({ name: 'GuardarProducto' })"></v-btn>
+                        <v-btn
+                            v-text="'Nuevo'"
+                            size="auto"
+                            @click="router.push({ name: 'GuardarProducto' })"
+                        ></v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
             <v-col cols="10">
                 <v-row>
                     <v-col v-for="imagen in imagenes" cols="4">
-                        <CardModelo :item="imagen" @eliminado="eliminar(imagen.id)"></CardModelo>
+                        <CardModelo
+                            :item="imagen"
+                            @eliminado="eliminar(imagen.id)"
+                        ></CardModelo>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12">
-                        <v-pagination v-model="page" :length="paginastotales"></v-pagination>
+                        <v-pagination
+                            v-model="page"
+                            :length="paginastotales"
+                        ></v-pagination>
                     </v-col>
                 </v-row>
             </v-col>
@@ -46,47 +48,38 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
-const visible = ref(false)
-const imagenes = ref([])
-const img = {}
+import axios from "axios";
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+const visible = ref(false);
+const imagenes = ref([]);
+const img = {};
 const page = ref(1);
 const paginastotales = ref(1);
-import CardModelo from './CardModelo.vue';
-import GuardarProducto from './GuardarProducto.vue';
-import router from '../router';
-
-
-
-
-
-
-
-
+import CardModelo from "./CardModelo.vue";
+import GuardarProducto from "./GuardarProducto.vue";
+import router from "../router";
 
 const modelos = async () => {
-    const { data } = await axios.get(`/modelos?page=${page.value}`)
-    imagenes.value = data.data
+    const { data } = await axios.get(`/modelos?page=${page.value}`);
+    imagenes.value = data.data;
     page.value = data.current_page;
-    paginastotales.value = data.last_page
-}
+    paginastotales.value = data.last_page;
+};
 
-watch(() => page.value, async () => {
-    await modelos();
+watch(
+    () => page.value,
+    async () => {
+        await modelos();
+    }
+);
+
+onMounted(() => {
+    modelos();
 });
 
-
-onMounted(() => { modelos() })
-
-
-const eliminar = (id)=>{
-
-    console.log('hdfjhdh')
-    imagenes.value = imagenes.value.filter((imagen)=> imagen.id != id)
-}
-
+const eliminar = (id) => {
+    console.log("hdfjhdh");
+    imagenes.value = imagenes.value.filter((imagen) => imagen.id != id);
+};
 </script>
-
-

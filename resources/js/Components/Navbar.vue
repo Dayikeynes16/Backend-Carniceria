@@ -1,9 +1,9 @@
 <template>
-  <v-app-bar elevation="0">
+  <v-app-bar elevation="0" color="grey-darken-1">
     <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     <v-app-bar-title>Applicaciones Creativas</v-app-bar-title>
 
-    <template v-slot:append>
+    <template  v-slot:append>
       <div v-if="!admin "  style="margin-right: 10px; margin-top: 10px;">
         <el-badge :value="cartStore.items.length + cartStore.files.length" :max="99" class="item">
           <v-btn  @click="handleCartClick" icon="mdi-cart"></v-btn>
@@ -24,7 +24,7 @@
     </template>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="drawer" temporary>
+  <v-navigation-drawer color="grey-lighten-2" v-model="drawer" temporary>
     <v-list-item prepend-icon="mdi-account-circle" @click='router.push({ name: "Cuenta" })' :title="user.name"></v-list-item>
     <v-divider class="my-0"></v-divider>
 
@@ -32,7 +32,7 @@
     <v-divider class="my-0" v-if="admin"></v-divider>
     
     <v-list-item v-if="!admin" @click='router.push({ name: "catalogo" })' title="Catalogo"></v-list-item>
-    <v-divider class="my-0"></v-divider>
+    <v-divider v-if="!admin" class="my-0"></v-divider>
 
     <v-list-item v-if="!admin" @click='router.push({ name: "cotizar" })' title="Cotizar"></v-list-item>
     <v-divider class="my-0"></v-divider>

@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FileRequest;
-use App\Models\Carrito;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Files;
 use App\Models\Orden;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
-
 
 class ArchivosController extends Controller
 {
-
-    public function calculate(request $request)
+    public function calculate(Request $request)
     {
-
         $request->validate([
             'file' => 'file|required',
-
         ]);
 
         try {
@@ -28,27 +22,27 @@ class ArchivosController extends Controller
 
             $orden = Orden::firstOrCreate([
                 'status' => 'activo',
-                'usuario_id' => $request->user()->id
+                'usuario_id' => $request->user()->id,
             ], [
                 'total' => 0,
-                'status'=> 'activo'
+                'status' => 'activo',
             ]);
 
+            $filePath = $request->file('file')->store('files');
             $file = $orden->files()->create([
-                'path' => $request->file('file')->store('files'),
+                'path' => $filePath,
                 'nombre' => $request->file('file')->getClientOriginalName(),
                 'minutos' => ($response['print_time'] / 60) / 3.5,
-                'precio' => (($response['print_time'] / 60) / 3.5) * 1.5
-                
+                'precio' => (($response['print_time'] / 60) / 3.5) * 1.5,
             ]);
+
             return response()->json(['data' => $file]);
-        } catch (\Exception $e) {
-            return response()->json(['message' =>  $e->getMessage()], 409);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
 
         return response()->json(['message' => 'Error al subir el archivo.']);
     }
-
 
     public function apiRequest($file)
     {
@@ -63,58 +57,50 @@ class ArchivosController extends Controller
             ->timeout(60)
             ->attach(
                 'stl_file',
-                file_get_contents($file->path()),
+                file_get_contents($file->getRealPath()),
                 $file->getClientOriginalName(),
                 ['Content-Type' => $file->getMimeType()]
             )
             ->post($url, [
                 'material_type' => 'ABS'
             ]);
+
         if (!$response->json('http_code')) throw new Exception('Ocurrió un problema al procesar el archivo');
 
         return $response->json('result_data');
     }
 
-    public function deletefile(Request $request){
-        $id = $request->input('id');
-        $file = Files::find($id);
-        $carrito = Carrito::where('usuario_id', $request->user()->id)->where('status', 'activo')->first();  
-
-    
-        if ($file) {
-            Storage::delete($file->path);
-      
-            $file->delete();
-            $this->calcularCarrito($carrito->id);
-            return response()->json(['data' => 'eliminado con exito']);
-        } else {
-            return response()->json(['error' => 'Archivo no encontrado'], 404);
-        }
-    }
-    
-    public function calcularCarrito($id)
+    public function downloadFile($id)
     {
-        $carrito = Carrito::with('productosCarritos.producto', 'orden.files')->find($id);
 
-        if ($carrito) {
-            $total = 0;
-
-         
-            foreach ($carrito->productosCarritos as $item) {
-                $total += $item->producto->price * $item->cantidad;
-            }
+        $file = Files::find($id);
 
 
-
-          
-            foreach ($carrito->orden as $orden) {
-                foreach ($orden->files as $file) {
-                    $total += $file->precio;
-                }
-            }
-
-            $carrito->total = $total;
-            $carrito->save();
+        if (!$file || !Storage::exists($file->path)) {
+            return response()->json(['error' => 'File not found.'], 404);
         }
+
+ 
+        return Storage::download($file->path, $file->nombre);
     }
+
+    public function guardarSTLproducto(Request $request){
+        $request->validate([
+            'file' => 'file|required',
+            'producto_id' => 'numeric|required'
+        ]);
+        $filePath = $request->file('file')->store('files');
+
+
+        $file = Files::create([
+            'producto_id' => $request->input('producto_id'),
+            'path' => $filePath,
+            'nombre' => $request->file('file')->getClientOriginalName()
+        ]);
+        $file->save();
+
+        
+        
+    }
+
 }

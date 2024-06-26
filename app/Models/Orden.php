@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Orden extends Model
 {
     use HasFactory;
-    protected $fillable = ['status', 'usuario_id', 'total','carrito_id'];
+    protected $fillable = ['id','status', 'usuario_id', 'total','carrito_id'];
 
     protected $table = 'ordenes';
 
@@ -19,5 +19,5 @@ class Orden extends Model
     public function carrito(){
         return $this->belongsTo(Carrito::class,'carrito_id');
     }
-    
+
 }

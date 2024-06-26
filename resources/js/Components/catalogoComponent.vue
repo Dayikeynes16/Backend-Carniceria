@@ -5,8 +5,6 @@
                 <v-row>
                     <v-col v-for="imagen in imagenes" :key="imagen.id" cols="4">
                         <v-card style="width: 100%" elevation="1">
-                            <!-- <v-img height="20vh" :src="imagen.urls[0]"></v-img> -->
-
                             <div class="demo-image__preview">
                                 <el-image
                                     :src="imagen.urls[0]"
@@ -16,23 +14,23 @@
                                     fit="cover"
                                 ></el-image>
                             </div>
-
                             <v-card-title>
                                 <v-row>
-                                    <v-col cols="8"><div class="font-weight-regular">
-                                        {{ imagen.name }} 
-
-                                    </div></v-col>
+                                    <v-col cols="8"
+                                        ><div class="font-weight-regular">
+                                            {{ imagen.name }}
+                                        </div></v-col
+                                    >
                                     <v-col cols="4">
                                         <div class="font-weight-normal">
                                             {{
-                                            Intl.NumberFormat("es-MX", {
-                                                style: "currency",
-                                                currency: "MXN",
-                                                minimumFractionDigits: 2,
-                                            }).format(imagen.price)
-                                        }}
-                                        </div>   
+                                                Intl.NumberFormat("es-MX", {
+                                                    style: "currency",
+                                                    currency: "MXN",
+                                                    minimumFractionDigits: 2,
+                                                }).format(imagen.price)
+                                            }}
+                                        </div>
                                     </v-col>
                                 </v-row>
                             </v-card-title>
@@ -45,17 +43,45 @@
                                 <v-row>
                                     <v-col cols="8">
                                         <v-row>
-                                            <v-col cols="3"><v-icon @click="sumarProductoCantidad(imagen)" circle icon="mdi-plus"></v-icon></v-col>
-                                            <v-col cols="2">{{imagen.cantidad}}</v-col>
-                                            <v-col cols="2"><v-icon @click="restarProductoCantidad(imagen)" circle icon="mdi-minus"></v-icon></v-col>
+                                            <v-col class="text-left" cols="3"
+                                                ><v-icon
+                                                    @click="
+                                                        sumarProductoCantidad(
+                                                            imagen
+                                                        )
+                                                    "
+                                                    circle
+                                                    icon="mdi-plus"
+                                                ></v-icon
+                                            ></v-col>
+                                            <v-col
+                                                class="text-center"
+                                                cols="2"
+                                                >{{ imagen.cantidad }}</v-col
+                                            >
+                                            <v-col class="text-left" cols="3"
+                                                ><v-icon
+                                                    @click="
+                                                        restarProductoCantidad(
+                                                            imagen
+                                                        )
+                                                    "
+                                                    circle
+                                                    icon="mdi-minus"
+                                                ></v-icon
+                                            ></v-col>
                                         </v-row>
-
                                     </v-col>
-                                    <v-col cols="4">
+                                    <v-col class="text-right" cols="4">
                                         <v-icon
-                                            @click="añadirCarrito(imagen.id, imagen.cantidad)"
-                                           icon="mdi-cart"
-                                           color="primary"
+                                            @click="
+                                                añadirCarrito(
+                                                    imagen.id,
+                                                    imagen.cantidad
+                                                )
+                                            "
+                                            icon="mdi-cart"
+                                            color="primary"
                                         ></v-icon
                                     ></v-col>
                                 </v-row>
@@ -87,27 +113,27 @@ const token = document
 const page = ref(1);
 const paginastotales = ref(1);
 const imagenes = ref([]);
-const cantidad = ref(2)
+const cantidad = ref(2);
 
 const cartStore = useCartStore();
 
 const modelos = async () => {
     const { data } = await axios.get(`/modelos?page=${page.value}`);
-    console.log('hola')
+    console.log("hola");
     console.log(data.data);
     imagenes.value = data.data.map((imagen) => {
         return {
             ...imagen,
             urls: imagen.imagenes.map((imagen) => imagen.url),
-            cantidad: 1
+            cantidad: 1,
         };
     });
     page.value = data.current_page;
     paginastotales.value = data.last_page;
 };
 
-const añadirCarrito = async (id,cantidad) => {
-    await cartStore.addToCart(id,cantidad);
+const añadirCarrito = async (id, cantidad) => {
+    await cartStore.addToCart(id, cantidad);
 };
 
 watch(
@@ -117,12 +143,11 @@ watch(
     }
 );
 
-
 const restarProductoCantidad = (imagen) => {
     if (imagen.cantidad > 1) {
         imagen.cantidad--;
     } else {
-        alert('La cantidad no puede ser 0');
+        alert("La cantidad no puede ser 0");
     }
 };
 
