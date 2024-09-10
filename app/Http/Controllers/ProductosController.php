@@ -2,61 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Direccion;
-use App\Models\Images;
-use App\Models\Product;
+use App\Models\Producto;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
-class ProductosController extends Controller
+class ProductosController
 {
-    function StoreProduct(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return response()->json(['data' => Producto::all()]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric'
+            'nombre' => 'required|string',
+            'precio_de_venta' => 'required|numeric',
+            'precio_produccion' => 'required|numeric',
+            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif'
         ]);
-
-        $product = Product::create(
-            array_merge($request->all())
-        );
-        return response()->json(['data' => $product, 'code'=>200]);
-    }
-    function traerProductos(Request $request)
-    {
-        $productos =  Product::with('Imagenes')->paginate(3);
-
-        return $productos;
-
-    }
-    
-
-    
-
-    function eliminarProducto(Request $request){
-        $id = $request->input('id');
-        $imagenes = Images::where('producto_id',$id)->delete();
-        $producto = Product::find($id);
-        $producto->delete();
-        return response(['data'=> 200, 'message'=>'producto eliminado con exito']);
-
-    }
-
-
-        function show(Product $producto)
-    {
-        return response()->json(['data' => $producto]);
-    }
-
-    function update(Product $producto, Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric'
+        $imagePath = $request->file('imagen')->store('productos', 'public');
+        Producto::create([
+            'nombre' => $request->nombre,
+            'precio_de_venta' => $request->precio_de_venta,
+            'precio_produccion' => $request->precio_produccion,
+            'imagen' => $imagePath,
         ]);
-        $producto->update($request->all());
-        return response()->json(['data' => $producto]);
+        
+        return response()->json(['data'=>'exito']);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Producto $producto)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Producto $producto)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Producto $producto)
+    {
+        //
     }
 }
