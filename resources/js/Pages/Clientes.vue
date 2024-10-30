@@ -60,11 +60,16 @@
                         </template>
                         <v-list>
                           <v-list-item>
-                            <v-btn block color="blue" @click="editClient(item)" append-icon="mdi-pencil-outline">Editar</v-btn>
+                            <v-btn block color="success" @click="router.push({name: 'detalle-cliente', params: { id: item.id }})" append-icon="mdi-account-search">
+                              Más...
+                            </v-btn>
                           </v-list-item>
                           <v-list-item>
-                            <v-btn block append-icon="mdi-delete-outline">Eliminar</v-btn>
+                            <v-btn block color="blue" @click="editClient(item)" append-icon="mdi-pencil-outline">Editar</v-btn>
                           </v-list-item>
+                          <!-- <v-list-item>
+                            <v-btn block append-icon="mdi-delete-outline">Eliminar</v-btn>
+                          </v-list-item> -->
                         </v-list>
                       </v-menu>
                     </template>
@@ -85,13 +90,23 @@
         @actualizado="handleClientUpdated"
       ></RegistroClientes>
     </v-dialog>
+
+    <!-- <v-dialog v-model="showClientDialog">
+      <DetallesCliente >
+
+      </DetallesCliente>
+    </v-dialog> -->
   </template>
   
   <script setup>
+
+  import { useRouter } from "vue-router";
   import { ref, onMounted } from 'vue';
   import RegistroClientes from '../Components/RegistroClientes.vue';
+  import DetallesCliente from './DetallesCliente.vue';
   import axios from '../axios';
-  
+  const router = useRouter();
+  const showClientDialog = ref(false);
   const search = ref('');
   const addClient = ref(false);
   const selectedClient = ref({
@@ -111,12 +126,13 @@
   ]);
   
   const getClients = () => {
-    axios.get('/clientes-back')
+    axios.get('/client-back')
       .then(({ data }) => {
         clientes.value = data.data;
       });
   };
   
+
   const handleClientAdded = () => {
     addClient.value = false;
     getClients();
@@ -131,6 +147,10 @@
     selectedClient.value = { ...client, update: true };
     addClient.value = true;
   };
+
+  const showClient = (client) => {
+    showClientDialog.value = true
+  }
   
   onMounted(() => {
     getClients();

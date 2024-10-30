@@ -7,6 +7,7 @@ import Clientes from './Pages/Clientes.vue';
 import prueba from './Pages/prueba.vue';
 import Producto from './Pages/Registros/Productos.vue';
 import venta from './Pages/venta.vue';
+import DetallesCliente from './Pages/DetallesCliente.vue';
 const routes = [
     {
         name: 'Index',
@@ -42,7 +43,13 @@ const routes = [
                 name: 'prueba',
                 path: 'prueba',
                 component: prueba
-            }
+            },
+            {
+                path: '/cliente/:id',
+                name: 'detalle-cliente',
+                component: DetallesCliente,
+                props: true  // Esto permite pasar el parámetro como prop
+              }
         ]
     }      
     

@@ -20,24 +20,37 @@ class ClientesController
      */
     public function store(Request $request)
     {
-        // return response()->json(['data' => Clientes::create($request->all()) ]); 
+        $request->validate([
+            'nombre' => 'required|string',
+            'telefono' => 'required|digits:10|integer',
+            'direccion' => 'nullable|string',
+            'credito' => 'boolean',
+            'monto' => 'numeric|min:0',
+        ]);
 
+        $cliente = Clientes::create($request->all());
+
+        return response()->json(['data'=>$cliente]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Clientes $clientes)
+    public function show(Clientes $client_back)
     {
-        //
+        // $cliente = Clientes::find($id);
+        
+        return response()->json(['data'=>$client_back]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Clientes $clientes)
+    public function update($id, Request $request)
     {
-        //
+        $cliente = Clientes::find($id);
+        $cliente->update($request->all());
+        return response()->json(['data' => $cliente]);
     }
 
     /**

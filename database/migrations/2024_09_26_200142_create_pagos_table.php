@@ -7,21 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.x
      */
     public function up(): void
     {
-        Schema::create('ventas', function (Blueprint $table) {
+        Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->double('total');
-            $table->integer('balanza');
-            $table->softDeletes();
+            $table->decimal('total');
             $table->string('metodo_de_pago')->default('efectivo');
-            $table->foreignId('cliente_id')->nullable()->constrained('clientes');
-            $table->boolean('pagado')->default('false');
+            $table->decimal('tarjeta')->default(0);
+            $table->decimal('transferencia')->default(0);
+            $table->decimal('efectivo')->default(0);
+            $table->decimal('pendiente')->default(0);
+            $table->foreignId('venta_id')->nullable()->constrained('ventas');
             
-
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ventas');
+        Schema::dropIfExists('pagos');
     }
 };

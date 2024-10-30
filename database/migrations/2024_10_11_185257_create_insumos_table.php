@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clientes', function (Blueprint $table) {
+        Schema::create('insumos', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('nombre');
-            $table->string('telefono');
-            $table->string('direccion');
-            $table->string('cordenadas')->nullable();
-            $table->boolean('credito')->default('false');
-            $table->decimal('monto',total: 8, places: 2)->default(0);
+            $table->decimal('peso');
+            $table->decimal('precio');
+            $table->decimal('total');
+            $table->foreignId('cliente_id')->nullable()->constrained('clientes');
+            $table->foreignId('categoria_id')->constrained('categorias');
+
+
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clientes');
+        Schema::dropIfExists('insumos');
     }
 };

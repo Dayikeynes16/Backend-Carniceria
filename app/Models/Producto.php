@@ -9,9 +9,12 @@ class Producto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'precio_de_venta','precio_produccion','imagen'];
+    protected $fillable = ['nombre', 'precio_de_venta','piezas', 'precio_produccion', 'imagen'];
 
     protected $table = 'productos';
 
-   
+    protected $casts = [
+        'precio_de_venta' => 'float',
+        'precio_produccion' => 'float',
+    ];
 }

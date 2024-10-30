@@ -14,6 +14,15 @@ class Clientes extends Model
         'direccion',
         'cordenadas',
         'credito',
-        'monto'
+        'monto',
+        'proveedor'
     ];
+
+    public function ventas () {
+        return $this->hasMany(Venta::class);
+    }
+    public function descuentos(){
+        return $this->hasMany(Precio_especial::class,'cliente_id');
+
+    }
 }

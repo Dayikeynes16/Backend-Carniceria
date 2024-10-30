@@ -29,13 +29,15 @@
           </v-card>
         </v-col>
       </v-row>
+
+      
+
     </v-container>
   </template>
   
   <script setup>
   import { defineEmits, ref, defineProps, onMounted } from 'vue';
-  import axios from '../axios';
-  
+  import axios from '@/axios';
   const emit = defineEmits(['cancelado', 'agregado', 'actualizado']);
   const props = defineProps({
     cliente: {
@@ -47,21 +49,22 @@
         direccion: '',
         credito: false,
         monto: 0,
-        update: false
+        update: false,
       })
     }
   });
   
   const cliente = ref({ ...props.cliente });
   
-  const saveClient = () => {
+  const saveClient = async () => {
     if (cliente.value.update) {
-      axios.put(`clientes-back/${cliente.value.id}`, cliente.value)
+      console.log(axios);
+      await axios.put(`client-back/${cliente.value.id}`, cliente.value)
         .then(() => {
           emit('actualizado');
         });
     } else {
-      axios.post('clientes-back', cliente.value)
+       await axios.post('api/client-back', cliente.value)
         .then(() => {
           emit('agregado');
         });

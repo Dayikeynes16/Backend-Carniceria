@@ -15,7 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(except: [
+            // '/client-back',
+            // '/client-back/1',
+            // '/client-back/5',
+            // '/producto/1',
+            // '/pagos-back/1',
+            // '/venta/1'
+
+
+            
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
