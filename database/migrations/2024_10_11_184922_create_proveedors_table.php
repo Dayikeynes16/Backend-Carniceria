@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('empresa');
-            $table->string('nombre');
+            $table->foreignId('cliennte_id')->constrained('clientes');
             $table->string('telefono')->unique();
             $table->string('categoria');
         });

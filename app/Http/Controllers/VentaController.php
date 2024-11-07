@@ -56,10 +56,6 @@ class VentaController
         $venta->save();
         $pago = Pago::create([
             'total' => $total,
-            'tarjeta' => 0,
-            'efectivo' => 0,
-            'transferencia' => 0,
-            'status' => '0',
             'pendiente' => $total,
             'venta_id' => $venta->id
         ]);

@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('venta', function (Blueprint $table) {
+        Schema::create('creditos', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('balanza');
-            $table->decimal('total')->default(0.00);
-            $table->boolean('pagado')->default(false);
-            $table->string('status')->default('por cobrar');
-            $table->foreignId('cliente_id')->nullable()->constrained('clientes')->onDelete('cascade');
         });
     }
 
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('venta');
+        Schema::dropIfExists('creditos');
     }
 };

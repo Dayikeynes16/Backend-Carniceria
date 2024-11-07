@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\DetallePagoController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\PagoController;
@@ -30,6 +31,7 @@ Route::apiResource('/precio-especial', PrecioEspecialController::class);
 Route::apiResource('/insumos', InsumoController::class);
 Route::apiResource('/proveedores', ProvedoresController::class);
 Route::apiResource('/categorias', CategoriaController::class);
+Route::apiResource('/detalle_pago', DetallePagoController::class);
 
 // Route::get('/{any}', function (): View {
 //     return view('welcome');

@@ -23,6 +23,7 @@ class ClientesController
         $request->validate([
             'nombre' => 'required|string',
             'telefono' => 'required|digits:10|integer',
+            'is_proveedor'=>'',
             'direccion' => 'nullable|string',
             'credito' => 'boolean',
             'monto' => 'numeric|min:0',

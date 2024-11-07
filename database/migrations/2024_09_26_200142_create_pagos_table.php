@@ -7,21 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.x
+     * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->decimal('total');
-            $table->string('metodo_de_pago')->default('efectivo');
-            $table->decimal('tarjeta')->default(0);
-            $table->decimal('transferencia')->default(0);
-            $table->decimal('efectivo')->default(0);
-            $table->decimal('pendiente')->default(0);
-            $table->foreignId('venta_id')->nullable()->constrained('ventas');
-            
+            $table->foreignId('venta_id')->constrained('ventas')->onDelete('cascade');
+            $table->decimal('total', 10, 2); // El total de la venta
+            $table->decimal('pendiente', 10, 2); // Monto restante por pagar
+            $table->timestamps(); // created_at y updated_at
         });
     }
 

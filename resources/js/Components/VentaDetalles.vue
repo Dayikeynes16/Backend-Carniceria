@@ -1,8 +1,12 @@
 <template>
     <v-card>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn variant="outlined">Cerrar</v-btn>
+      </v-card-actions>
       <v-card-text>
-        total: {{ FormatCurrency(venta.total) }}
-        <v-card title="Productos de la venta">
+        "Productos de la venta"
+
           <v-card-text v-for="producto in venta.productos" :key="producto.id">
             <v-row>
               <v-col cols="6">
@@ -31,7 +35,7 @@
               </v-col>
             </v-row>
           </v-card-text>
-        </v-card>
+     
       </v-card-text>
     </v-card>
   </template>
@@ -40,6 +44,7 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import FormatCurrency from '../composables/FormatCurrency.js';
+  const loading = ref(false);
   // Definimos los props que recibe el componente.
   const props = defineProps({
     id: {
@@ -57,6 +62,7 @@
   // Función para hacer la petición al backend.
   const fetchVenta = async () => {
     try {
+        
       const response = await axios.get(`api/venta/${props.id}`);
       venta.value = response.data.data;
     } catch (error) {
