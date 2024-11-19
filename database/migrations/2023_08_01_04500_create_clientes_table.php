@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('nombre');
             $table->string('telefono');
-            $table->boolean('is_proveedor');
+            $table->boolean('is_proveedor')->nullable();
             $table->string('direccion');
             $table->string('cordenadas')->nullable();
             $table->boolean('credito')->default('false');

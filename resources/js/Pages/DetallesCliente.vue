@@ -5,7 +5,10 @@
         <v-row class="pa-5">
             <v-col  class=" d-flex justify-space-between align-center">
             <h1 class="text-h3 font-weight-bold" >Información del Cliente</h1>
-            <v-btn variant="flat"  color="black">Editar Cliente</v-btn>
+            <v-btn variant="flat"  color="black" @click="AddDiscount = true">Añadir Descuento</v-btn>
+            <v-dialog v-model="AddDiscount" max-width="500">
+              <PrecioEspecial :producto = "UpdateProduct"  :id="cliente.id" @cerrar="AddDiscount = false"></PrecioEspecial>
+            </v-dialog>
             </v-col>
         </v-row>
      
@@ -22,8 +25,8 @@
                       <v-col cols="10" align-text="left">
                 
                         <h2 class="text-h5 font-weight-semibold">{{cliente.nombre}}</h2>
-                        <p class="text-body-2">{{ cliente.direccion }}</p>
-                        <p class="text-body-2">{{ cliente.telefono }}</p>
+                        <p class="text-body-2">Dirección: {{ cliente.direccion }}</p>
+                        <p class="text-body-2">Telefono: {{ cliente.telefono }}</p>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -47,35 +50,36 @@
             </v-row>
             <v-row class="ma-7">
               <v-card elevation="6" class="" width="100%">
-                <v-card-title>Shops</v-card-title>
+                <v-card-title>Compras recientes</v-card-title>
                 <v-card-text>
                   <v-table>
                     <thead>
                       <tr>
-                        <th>Shop Name</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                        <th>Monthly Revenue</th>
-                      </tr>
+
+                      <th>
+                        Fecha
+                      </th>
+                      <th>
+                        Total
+                      </th>
+                      <th>
+                        Estatus
+                      </th>
+                    </tr>
+
                     </thead>
                     <tbody>
-                      <tr>
-                        <td class="font-weight-medium">Downtown Boutique</td>
-                        <td>New York, NY</td>
-                        <td><v-chip>Active</v-chip></td>
-                        <td>$12,500</td>
-                      </tr>
-                      <tr>
-                        <td class="font-weight-medium">Sunset Shop</td>
-                        <td>Los Angeles, CA</td>
-                        <td><v-chip color="grey">Pending</v-chip></td>
-                        <td>$8,200</td>
-                      </tr>
-                      <tr>
-                        <td class="font-weight-medium">Harbor View Store</td>
-                        <td>Seattle, WA</td>
-                        <td><v-chip>Active</v-chip></td>
-                        <td>$10,800</td>
+                      <tr v-for="i in ventas">
+                        <td>
+                          {{ formatRelativeTime(i.created_at) }}
+                        </td>
+                        <td>
+                          {{ formatCurrency(i.total) }} 
+                        </td>
+                        <td>
+                          <span v-if="i.pagado">Pagado</span>
+                          <span v-else>Pendiente</span>
+                        </td>
                       </tr>
                     </tbody>
                   </v-table>
@@ -87,24 +91,24 @@
               <v-col cols="3" md="6" lg="3">
                 <v-card width="100%" elevation="6">
                   <v-card-title class="d-flex justify-space-between">
-                    <span>Total Revenue</span>
+                    <span>Gasto Mensual</span>
                     <v-icon>mdi-currency-usd</v-icon>
                   </v-card-title>
                   <v-card-text>
-                    <h2 class="text-h5 font-weight-bold">$45,231.89</h2>
-                    <p class="text-caption">+20.1% from last month</p>
+                    <h2 class="text-h5 font-weight-bold">{{ formatCurrency(saled_last_month) }}</h2>
+                    <!-- <p class="text-caption">+20.1% from last month</p> -->
                   </v-card-text>
                 </v-card>
               </v-col>
               <v-col cols="3" md="6" lg="3">
                 <v-card width="100%" elevation="6">
                   <v-card-title class="d-flex justify-space-between">
-                    <span>Active Shops</span>
+                    <span>Compras pendientes</span>
                     <v-icon>mdi-store</v-icon>
                   </v-card-title>
                   <v-card-text>
-                    <h2 class="text-h5 font-weight-bold">3</h2>
-                    <p class="text-caption">+1 this quarter</p>
+                    <h2 class="text-h5 font-weight-bold">{{ ventas.active_sales }}</h2>
+                    <!-- <p class="text-caption">+1 this quarter</p> -->
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -115,7 +119,7 @@
                     <v-icon>mdi-package-variant</v-icon>
                   </v-card-title>
                   <v-card-text>
-                    <h2 class="text-h5 font-weight-bold">1,429</h2>
+                    <h2 class="text-h5 font-weight-bold">fd</h2>
                     <p class="text-caption">+185 new this month</p>
                   </v-card-text>
                 </v-card>
@@ -136,36 +140,82 @@
             <v-row>
               <v-col cols="12">
                 <v-card class="ma-6 pr-6"  elevation="6">
-                  <v-card-title>Actividad Reciente</v-card-title>
+                  <v-card-title>Descuentos</v-card-title>
                   <v-card-text>
-                    <v-list>
-                      <v-list-item>
+                    <v-table>
+                      <thead>
+                        <tr>
+                          <td>
+                            Producto
+                          </td>
+                          <td>
+                            Precio Original
+                          </td>
+                          <td>
+                            Precio con descuento
+                          </td>
+                          <td>
+                            Acciones
+                          </td>
+                        </tr>
+                      </thead>
+
+                        <tbody>
+                          <tr v-for="i in cliente.descuentos">
+                            <th>
+                              {{ i.producto.nombre }}
+                            </th>
+                            <th>
+                              {{ formatCurrency(i.producto.precio_de_venta) }}
+                            </th>
+                            <th>
+                              {{ formatCurrency(i.precio) }}
+                            </th>
+                            <th>
+                              <v-row>
+                                <v-col cols="6">
+                                  <v-icon icon="mdi-pencil" @clik="editProduct(i)" class="cursor-pointer">
+                                    
+                                  </v-icon>
+                                </v-col>
+                                <v-col cols="6">
+                                  <v-icon icon="mdi-delete" class="cursor-pointer">
+    
+                                  </v-icon>
+                                </v-col>
+                              </v-row>
+                            </th>
+                          </tr>
+                        </tbody>
+                    </v-table>
+                    <!-- <v-list>
+                       <v-list-item>
                         <v-icon left>mdi-shopping</v-icon>
                         <v-list-item-content>
                           <v-list-item-title>New order placed</v-list-item-title>
                           <v-list-item-subtitle>Order #12345 - $230.00</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-content class="text-caption">2 hours ago</v-list-item-content>
-                      </v-list-item>
+                      </v-list-item> -->
             
-                      <v-list-item>
+                      <!-- <v-list-item>
                         <v-icon left>mdi-account</v-icon>
                         <v-list-item-content>
                           <v-list-item-title>Customer details updated</v-list-item-title>
                           <v-list-item-subtitle>Changed shipping address</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-content class="text-caption">Yesterday</v-list-item-content>
-                      </v-list-item>
+                      </v-list-item> -->
             
-                      <v-list-item>
+                      <!-- <v-list-item v-for="i in cliente.descuentos">
                         <v-icon left>mdi-credit-card</v-icon>
                         <v-list-item-content>
-                          <v-list-item-title>Credit limit increased</v-list-item-title>
-                          <v-list-item-subtitle>New limit: $10,000</v-list-item-subtitle>
+                          <v-list-item-title>{{ i.producto.nombre }}</v-list-item-title>
+                          <v-list-item-subtitle>Precio Original: {{ formatCurrency(i.producto.precio_de_venta) }}</v-list-item-subtitle>
+                          <strong>Precio especial: {{ formatCurrency(i.precio) }}</strong>
                         </v-list-item-content>
-                        <v-list-item-content class="text-caption">3 days ago</v-list-item-content>
                       </v-list-item>
-                    </v-list>
+                    </v-list> --> 
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -181,14 +231,34 @@ const route = useRoute();
 const id = route.params.id;  // Acceder al ID desde los parámetros de la URL
 const cliente = ref({});
 const  name = ref('ClientInfoPage')
+const ventas = ref([]);
+const loading = ref(true)
+const UpdateProduct = ref({});
+import 'dayjs/locale/es'; 
+import localeData from 'dayjs/plugin/localeData';
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(localeData);
+dayjs.extend(relativeTime);
+dayjs.locale('es');
 
 import axios from 'axios'
-
-
+import PrecioEspecial from './PrecioEspecial.vue';
+const saled_last_month = ref(0);
 const getClientInformation = async () => {
   axios.get(`/client-back/${id}`).then(({ data }) => {
     cliente.value = data.data; 
-    console.log(cliente.value);// Suponiendo que el endpoint te devuelve los detalles del cliente
+    ventas.value = data.ventas.data
+    ventas.value.active_sales = 0;
+    saled_last_month.value = data.vendido_ultimo_mes;
+
+    ventas.value.forEach((venta) => {
+      if (venta.pagado === false) {
+        ventas.value.active_sales += 1;
+      }
+    });
+
+    loading.value = false
     if(cliente.credito === false){
       clientCredit.value = false
     }
@@ -196,12 +266,21 @@ const getClientInformation = async () => {
 
 }
 
-const clientCredit = ref()
+const formatRelativeTime = (fecha) => {
+    return dayjs(fecha).fromNow();
+}
+
+const clientCredit = ref();
+const AddDiscount = ref(false);
+
+const editProduct = (item) => {
+  AddDiscount.value = true
+  UpdateProduct.value = item
+}
 
 onBeforeMount(() => {
   getClientInformation()
 
-  console.log('hola hijeputa',id);
 });
   </script>
   

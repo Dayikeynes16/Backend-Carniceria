@@ -50,6 +50,7 @@
         credito: false,
         monto: 0,
         update: false,
+        is_proveedor: false
       })
     }
   });
@@ -58,13 +59,15 @@
   
   const saveClient = async () => {
     if (cliente.value.update) {
-      console.log(axios);
-      await axios.put(`client-back/${cliente.value.id}`, cliente.value)
+      cliente.value.monto = parseFloat(cliente.value.monto)
+      console.log(cliente.value);
+      await axios.put(`/api/client-back/${cliente.value.id}`, cliente.value)
         .then(() => {
           emit('actualizado');
         });
     } else {
-       await axios.post('api/client-back', cliente.value)
+        cliente.value.is_proveedor = 0
+       await axios.post('/api/client-back', cliente.value)
         .then(() => {
           emit('agregado');
         });

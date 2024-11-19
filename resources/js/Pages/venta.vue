@@ -12,9 +12,9 @@
                         </v-card>
                     </v-col>
                     <v-col cols="8">
-                        <v-dialog v-model="venta.dialog" max-width="800" class="ma-0 pt-0">
+                        <v-dialog v-model="venta.dialog" max-width="900" class="ma-0 pt-0">
                                     
-                                <VentaDetalles  :id="venta.id"></VentaDetalles>
+                                <VentaDetalles   @cerrar="venta.dialog = false"  :id="venta.id"></VentaDetalles>
                         </v-dialog>
                     </v-col>
                

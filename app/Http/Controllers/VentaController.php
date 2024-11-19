@@ -41,7 +41,7 @@ class VentaController
         ]);
         $total = 0;
         foreach ($productos as $producto) {
-            $productoOriginal = Producto::find($producto['producto_id']);
+            $productoOriginal = Producto::find($producto['id']);
             $productoVenta = ProductoVenta::create([
                 'producto_id' => $productoOriginal->id,
                 'venta_id' => $venta->id,
@@ -61,6 +61,7 @@ class VentaController
         ]);
 
         return response()->json(['data' => $venta]);
+
     }
 
     /**
@@ -69,16 +70,17 @@ class VentaController
     public function show(Venta $ventum)
     {
         $ventum->load('productos.producto');
+        $clientes = Clientes::where('is_proveedor',false)->get();
     
-        return response()->json(['data' => $ventum]);
+        return response()->json(['data' => $ventum, 'clientes'=>$clientes]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id, Request $request)
+    public function update(Venta $ventum, Request $request)
     {
-        $venta = Venta::with('productos')->find($id);
+        $venta = $ventum;
         
         $venta->cliente_id = $request->input('cliente_id');
         $cliente = Clientes::with('descuentos')->find($request->input('cliente_id'));
@@ -87,7 +89,7 @@ class VentaController
         
         $descuento_id = $descuentos->pluck('producto_id')->toArray();
         
-        $productos = ProductoVenta::where('venta_id', $id)
+        $productos = ProductoVenta::where('venta_id', $venta->id)
                                    ->whereIn('producto_id', $descuento_id)
                                    ->get();
         
@@ -103,7 +105,7 @@ class VentaController
     
         $venta->save();
     
-        $venta->load('productos');
+        $venta->load('productos.producto');
     
         return response()->json(['data' => $venta]);
     }

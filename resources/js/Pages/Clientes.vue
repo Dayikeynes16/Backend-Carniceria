@@ -32,6 +32,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-data-table
+                    :loading="loadingClients"
                     color="seconda"
                     variant="outlined"
                     :headers="headers"
@@ -99,7 +100,6 @@
   </template>
   
   <script setup>
-
   import { useRouter } from "vue-router";
   import { ref, onMounted } from 'vue';
   import RegistroClientes from '../Components/RegistroClientes.vue';
@@ -108,6 +108,7 @@
   const router = useRouter();
   const showClientDialog = ref(false);
   const search = ref('');
+  const loadingClients = ref(true);
   const addClient = ref(false);
   const selectedClient = ref({
     nombre: '',
@@ -126,9 +127,11 @@
   ]);
   
   const getClients = () => {
-    axios.get('/client-back')
+    loadingClients.value = true
+    axios.get('api/client-back')
       .then(({ data }) => {
         clientes.value = data.data;
+        loadingClients.value = false
       });
   };
   

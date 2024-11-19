@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('precio_de_venta');
             $table->decimal('precio_produccion');
             $table->boolean('piezas');
+            $table->boolean('for_public')->default(true);
             $table->decimal('stock')->nullable();
             $table->string('imagen')->nullable();
         });

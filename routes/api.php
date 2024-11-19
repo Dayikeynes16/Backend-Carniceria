@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProductoVentaController;
 use App\Http\Controllers\ProvedoresController;
+use App\Http\Controllers\VentaClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\VentaDiariaController;
 use App\Models\Precio_especial;
@@ -32,6 +33,9 @@ Route::apiResource('/insumos', InsumoController::class);
 Route::apiResource('/proveedores', ProvedoresController::class);
 Route::apiResource('/categorias', CategoriaController::class);
 Route::apiResource('/detalle_pago', DetallePagoController::class);
+Route::apiResource('/descuento', VentaClienteController::class);
+
+
 
 // Route::get('/{any}', function (): View {
 //     return view('welcome');

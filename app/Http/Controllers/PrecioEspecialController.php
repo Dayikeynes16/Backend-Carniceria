@@ -23,9 +23,13 @@ class PrecioEspecialController
     public function store(Request $request)
     {
         $request->validate([
+
             'cliente_id' => 'required|integer',
+
             'producto_id' => 'required|integer',
+
             'precio' => ['required', 'regex:/^\d+(\.\d{1,2})?$/']
+            
         ]);
 
         $precio = Precio_especial::create($request->all());

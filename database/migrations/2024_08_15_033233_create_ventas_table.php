@@ -19,6 +19,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->string('metodo_de_pago')->default('efectivo');
             $table->foreignId('cliente_id')->nullable()->constrained('clientes');
+            $table->string('estatus')->nullable();
             $table->boolean('pagado')->default('false');
             
 

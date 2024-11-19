@@ -27,7 +27,7 @@
                             <v-btn block variant="outlined" v-if="!Producto.update" color="success" @click="saveProduct()">Guardar</v-btn>
                         </v-col>
                         <v-col cols="6" v-if="Producto.update">
-                            <v-btn block variant="outlined" color="success" >Actualizar</v-btn>
+                            <v-btn @click="UpdateProduct()" block variant="outlined" color="success" >Actualizar</v-btn>
                         </v-col>
                     </v-row>
                     </v-card-actions>
@@ -72,15 +72,15 @@ const saveProduct = async () => {
     formData.append('piezas', Producto.value.piezas ? '1' : '0');  
     formData.append('imagen', Producto.value.imagen);
     
-    await axios.post('/producto', formData, {headers: { "X-CSRF-TOKEN": token,'Content-Type': 'multipart/form-data'}})
-    addNewProduct.value = false
-
+    data= await axios.post('/api/producto', formData)
     .then(({data}) => {
         console.log(data);
         emit('agregado')
         getProducts();
         form.value = {};
     })
+
+    
 }
 
 const UpdateProduct = async () => {
@@ -90,13 +90,13 @@ const UpdateProduct = async () => {
         formData.append('imagen', Producto.value.imagen);
     }
 
-    try {
-        await axios.put(`producto/${Producto.value.id}`, Producto.value, formData)
-        .then(
-        )
-    } catch (error) {
-        console.error('Error al actualizar el producto', error);
-    }
+    
+    data = await axios.put(`/api/producto/${Producto.value.id}`, Producto.value, formData)
+        .then((data)=>{
+            console.log('hehehe'),
+            emit('actualizado')
+        })
+   
 };
 onMounted(() => {
     if (props.Producto.update) {

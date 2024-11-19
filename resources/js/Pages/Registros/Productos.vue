@@ -70,7 +70,7 @@
                     </v-row>
                     </v-card-actions>
                 </v-card> -->
-           <RegistroProductos @agregado="getProducts()" @cancelado="addNewProduct = false" :Producto="selectedClient"></RegistroProductos>
+           <RegistroProductos @actualizado="getProducts()" @agregado="getProducts()" @cancelado="addNewProduct = false" :Producto="selectedClient"></RegistroProductos>
             </v-dialog>
         </v-col>
         <!-- <v-col cols="6">
