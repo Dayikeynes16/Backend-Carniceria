@@ -18,17 +18,20 @@ return new class extends Migration
             $table->string('telefono');
             $table->boolean('is_proveedor')->nullable();
             $table->string('direccion');
-            $table->string('cordenadas')->nullable();
+            $table->string('cordenadas')->nullable();                                                                                                                      
             $table->boolean('credito')->default('false');
             $table->decimal('monto',total: 8, places: 2)->default(0);
         });
     }
 
-    /**
+    /**   
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('clientes');
-    }
+        Schema::table('venta', function (Blueprint $table) {
+            $table->dropForeign(['cliente_id']); // Asegúrate de que el nombre de la clave sea correcto
+        });
+        
+        Schema::dropIfExists('clientes');    }
 };

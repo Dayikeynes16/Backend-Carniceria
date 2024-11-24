@@ -18,16 +18,16 @@ return new class extends Migration
             $table->integer('balanza');
             $table->softDeletes();
             $table->string('metodo_de_pago')->default('efectivo');
-            $table->foreignId('cliente_id')->nullable()->constrained('clientes');
-            $table->string('estatus')->nullable();
+            $table->foreignId('cliente_id')->nullable()->constrained('clientes')->onDelete('set null');
+            $table->string('estatus')->default('activo');
             $table->boolean('pagado')->default('false');
             
 
         });
     }
 
-    /**
-     * Reverse the migrations.
+    /**                                                                                                                                                                  
+     * Reverse the migrations.                                    
      */
     public function down(): void
     {

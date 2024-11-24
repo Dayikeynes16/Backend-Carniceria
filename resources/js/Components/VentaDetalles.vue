@@ -133,23 +133,35 @@
                         <v-col cols="12">
 
                         </v-col>
-                        <v-col cols="7">
+                        <v-col cols="6">
                           <v-btn block>Efectivo</v-btn>
                           </v-col>
-                          <v-col cols="7">
+                          <v-col cols="6">
+                            <div style="background-color: aqua;">hey</div>
+                          </v-col>
+                          <v-col cols="6">
                             <v-btn block>Tarjeta</v-btn>
                         </v-col>
-                        <v-col cols="7">
+                        <v-col cols="6">
+
+                        </v-col>
+                        <v-col cols="6">
                           <v-btn block>Transferencia</v-btn>
                         </v-col>
-                        <v-col cols="7">
+                        <v-col cols="6"></v-col>
+                        <v-col cols="6">
                           <v-btn block>Mixto</v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                          <div style="background-color: aqua;">hey</div>
+
                         </v-col>
                       </v-row>
                     </v-col>
                     <v-col cols="6">
 
-                      <Calculadora :amount="venta.total"></Calculadora>                                          </v-col>
+                    
+                    </v-col>
                   </v-row>
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="4">

@@ -23,6 +23,7 @@
             
        
         </v-row>
+        <overlay v-if="OverlayValue"> </overlay>
 
     </v-container>
        
@@ -34,17 +35,24 @@ import axios from '../axios';
 import FormatCurrency from '../composables/FormatCurrency';
 import { supabase } from '../connection';
 import VentaDetalles from '../Components/VentaDetalles.vue';
+import overlay from '../Components/overlay.vue';
 
+const OverlayValue = ref(false)
 const selectedSale = ref()
 const token = document
     .querySelector("meta[name='csrf-token']")
     .getAttribute("content");
 
 const ventas = ref([])
+
+
 const getSales = async () => {
+    OverlayValue.value = true
     await axios.get('/venta')
     .then(({data}) => {
         ventas.value = data.data;
+    OverlayValue.value = false
+
     })
 }
 
