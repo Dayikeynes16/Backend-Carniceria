@@ -43,6 +43,7 @@
                         <tr>
                           <th>Producto</th>
                           <th>Precio</th>
+                          <th v-if="venta.cliente_id">Precio con descuento</th>
                           <th>Cantidad</th>
                           <th>Total</th>
                         </tr>
@@ -55,6 +56,8 @@
                           <td>
                             {{ FormatCurrency(producto.producto.precio_de_venta) }}
                           </td>
+                          <td  v-if="venta.cliente_id" >{{ formatCurrency(producto.total/producto.peso) }}</td>
+                          <!-- <td>{{ formatCurrency(producto.peso * producto.producto.precio_de_venta) }}</td> -->
                           <td>
                             {{ producto.peso }} kg
                           </td>  
@@ -120,49 +123,60 @@
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="3">
                   <v-row>
-                    <v-col cols="12">
-                      <div style="text-align: center;">
-                        <strong style="font-size: x-large;">Total: {{ FormatCurrency(venta.total) }}</strong>
-
+                  </v-row>
+                      <v-row>
+                        <v-col cols="12"
+                        
+                        >
+                      <div style="text-align: center; width: 400px;">
+                        <strong style="font-size: x-large;">Total: {{ FormatCurrency(venta.total) }}</strong><br>
+                        <strong style="font-size: x-large;">Resta: {{ FormatCurrency(pago.resta) }} </strong>
+                        <br>
+                        <strong style="font-size: x-large;" v-if="pago.cambio > 0">Cambio: {{ FormatCurrency(pago.cambio) }} </strong>
+                      
                       </div>
                     </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="6">
-                      <v-row>
-                        <v-col cols="12">
+                        
+                          <v-col cols="12">
+                            <v-text-field type="number"
+                            v-model="form.efectivo" 
+                            variant="outlined"
+                            label="Efectivo"
+                        width="400"
 
-                        </v-col>
-                        <v-col cols="6">
-                          <v-btn block>Efectivo</v-btn>
+                            ></v-text-field>
                           </v-col>
-                          <v-col cols="6">
-                            <div style="background-color: aqua;">hey</div>
-                          </v-col>
-                          <v-col cols="6">
-                            <v-btn block>Tarjeta</v-btn>
-                        </v-col>
-                        <v-col cols="6">
-
-                        </v-col>
-                        <v-col cols="6">
-                          <v-btn block>Transferencia</v-btn>
-                        </v-col>
-                        <v-col cols="6"></v-col>
-                        <v-col cols="6">
-                          <v-btn block>Mixto</v-btn>
-                        </v-col>
-                        <v-col cols="6">
-                          <div style="background-color: aqua;">hey</div>
-
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                    <v-col cols="6">
-
                     
-                    </v-col>
-                  </v-row>
+                        <v-col cols="12">
+                          <v-text-field type="number"
+                          v-model="form.tarjeta" 
+                          variant="outlined"
+                          width="400"
+                          label="Tarjeta"
+                          ></v-text-field>
+                        </v-col>
+                      
+                        <v-col cols="12">
+                          <v-text-field type="number"
+                          
+                          variant="outlined"
+                          width="400"
+                          v-model="form.transferencia" 
+                          label="Transferencia"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="6">
+                          <v-btn block>Pendiente</v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                          <v-btn block>cobrar</v-btn>
+                        </v-col>
+
+                        
+                      
+                      </v-row>
+
+                   
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="4">
                   verga
@@ -181,6 +195,8 @@
   import FormatCurrency from '../composables/FormatCurrency.js';
   import Calculadora from './Calculadora.vue'
 import { ElMessage } from 'element-plus'
+import formatCurrency from '../composables/FormatCurrency.js';
+import { computed } from 'vue';
 
   const emit = defineEmits(['cerrar','overlay']);
   const selectedClient = ref(null);
@@ -189,36 +205,29 @@ import { ElMessage } from 'element-plus'
   const tab = ref(null);
   const loading = ref(false);
 
-  // Definimos los props que recibe el componente.
   const props = defineProps({
     id: {
       type: Number,
       required: true
     }
   });
+
+  const form = ref({
+    tarjeta: 0,
+    transferencia: 0,
+    efectivo: 0
+  });
   
-  // Variables reactivas para los datos.
   const venta = ref({
-    // total: 0,
-    // productos: []
+ 
   });
 
-  // const getClients = async () => {
-  //   data = await axios.get('/client-back')
-  //   .then((data) => {
-  //     console.log(data.data.data, 'hdhdhd');
-  //     clients.value = data.data.data
-  //     // selectedClient.value = clients.value[0];
-  //   })
-
-  // }
 
   const AsociateSale = async () => {
     overlay.value = true;
     let response = await axios.put(`api/venta/${props.id}`,{cliente_id: selectedClient.value.id})
     .then((response) => { 
       console.log(response.data.data,'dahebbe')
-      // fetchVenta()
 
       overlay.value = false
       venta.value = response.data.data;
@@ -233,7 +242,6 @@ import { ElMessage } from 'element-plus'
 
   }
   
-  // Función para hacer la petición al backend.
   const fetchVenta = async () => {
     try {
       overlay.value = true;
@@ -251,10 +259,37 @@ import { ElMessage } from 'element-plus'
 
     }
   };
+
+  const pago = computed(() => {
+  const total = venta.value.total || 0;
+  const efectivo = form.value.efectivo || 0;
+  const tarjeta = form.value.tarjeta || 0;
+  const transferencia = form.value.transferencia || 0;
+
+  const resta = total - efectivo - tarjeta - transferencia;
+  const cambio = resta < 0 ? -resta : 0;
+
+  return {
+    total,
+    resta: resta > 0 ? resta : 0,
+    cambio,
+  };
+});
+
+  const calculate = () => {
+    pago.value.total = venta.value.total;
+    pago.value.resta = venta.value.total - form.value.efectivo - form.value.transferencia - form.value.tarjeta;
+    if(pago.value.resta <= 0){
+      pago.value.cambio = pago.value.resta * -1
+      pago.value.resta = 0
+      
+    } else {
+      pago.value.cambio = 0
+    }
+    return pago.value;
+  }
   
-  // Ejecutamos la función cuando el componente se monta.
   onMounted(() => {
     fetchVenta();
-    // getClients();
   });
   </script>

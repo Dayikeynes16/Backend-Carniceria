@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('producto_id')->constrained('productos');
-            $table->foreignId('cliente_id')->constrained('clientes')->onDelete('set null');
+            $table->unsignedBigInteger('cliente_id')->constrained('clientes')->nullable();
             $table->decimal('precio');
         });
     }

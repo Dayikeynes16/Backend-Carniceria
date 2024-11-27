@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('venta_id')->constrained('ventas')->onDelete('set null');
+            $table->unsignedBigInteger('venta_id')->nullable();
             $table->decimal('total', 10, 2); // El total de la venta
             $table->decimal('pendiente', 10, 2); // Monto restante por pagar
             $table->foreignId('cliente_id')->nullable()->constrained('clientes');

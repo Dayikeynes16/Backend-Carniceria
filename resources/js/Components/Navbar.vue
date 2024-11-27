@@ -6,7 +6,7 @@
       min-width="200"
       rail
       expand-on-hover
-      color="grey-lighten-2"
+      color=""
       nav
     >
       <v-list  nav class="pa-3">

@@ -28,57 +28,32 @@ class ProductosController
              'nombre' => 'required|string',
              'precio_de_venta' => 'required|numeric',
              'precio_produccion' => 'required|numeric',
-             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif',
+             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
              'piezas' => 'required|boolean'
          ]);
      
-         // Preparar el archivo para subir a Supabase
-         $image = $request->file('imagen');
-         $imagePath = $image->getPathname(); // Ruta temporal del archivo
-         $imageName = $image->getClientOriginalName(); // Nombre del archivo
+         // Subir la imagen al storage local en 'public/productos'
+         if ($request->hasFile('imagen')) {
+             $image = $request->file('imagen');
+             $imageName = time() . '_' . $image->getClientOriginalName(); // Nombre único para el archivo
+             $imagePath = $image->storeAs('productos', $imageName, 'public'); // Guardar en storage/app/public/productos
+         } else {
+             return response()->json(['error' => 'No se encontró ninguna imagen para subir'], 400);
+         }
      
-         // Subir la imagen a Supabase
-         $client = new Client([
-             'base_uri' => env('SUPABASE_URL') . '/storage/v1/', // Ajusta la base_uri
-             'headers' => [
-                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                 'apikey' => env('SUPABASE_API_KEY'),
-             ],
+         // Generar la URL pública para acceder a la imagen
+         $imageUrl = asset('storage/' . $imagePath);
+     
+         // Guardar el producto en la base de datos
+         Producto::create([
+             'nombre' => $request->nombre,
+             'precio_de_venta' => $request->precio_de_venta,
+             'precio_produccion' => $request->precio_produccion,
+             'imagen' => $imageUrl, // Guardar la URL pública
+             'piezas' => $request->piezas
          ]);
      
-         try {
-             // Subir el archivo
-             $response = $client->post('object/products/' . $imageName, [
-                 'body' => fopen($imagePath, 'r'),
-                 'headers' => [
-                     'Content-Type' => $image->getMimeType(),
-                 ],
-             ]);
-     
-             // Verificar la respuesta del servidor
-             if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
-                 // Obtener la URL pública de la imagen
-                 $imageUrl = env('SUPABASE_URL') . '/storage/v1/object/products/' . $imageName;
-     
-                 // Guardar el producto en la base de datos
-                 Producto::create(
-                    
-                [
-                     'nombre' => $request->nombre,
-                     'precio_de_venta' => $request->precio_de_venta,
-                     'precio_produccion' => $request->precio_produccion,
-                     'imagen' => $imageUrl,
-                     'piezas' => $request->piezas
-                 ]
-                );
-     
-                 return response()->json(['data' => 'exito']);
-             } else {
-                 throw new \Exception("Error al subir la imagen, código de estado: " . $response->getStatusCode());
-             }
-         } catch (\Exception $e) {
-             return response()->json(['error' => 'Error al subir la imagen: ' . $e->getMessage()], 500);
-         }
+         return response()->json(['data' => 'Producto creado exitosamente']);
      }
 
     /**

@@ -41,7 +41,7 @@ class VentaController
         ]);
         $total = 0;
         foreach ($productos as $producto) {
-            $productoOriginal = Producto::find($producto['id']);
+            $productoOriginal = Producto::find($producto['producto_id']);
             $productoVenta = ProductoVenta::create([
                 'producto_id' => $productoOriginal->id,
                 'venta_id' => $venta->id,
@@ -70,7 +70,8 @@ class VentaController
     public function show(Venta $ventum)
     {
         $ventum->load('productos.producto');
-        $clientes = Clientes::where('is_proveedor',false)->get();
+        $clientes = Clientes::with('descuentos')->where('is_proveedor',false)->get();
+        
     
         return response()->json(['data' => $ventum, 'clientes'=>$clientes]);
     }
@@ -88,22 +89,33 @@ class VentaController
         $descuentos = $cliente->descuentos;
         
         $descuento_id = $descuentos->pluck('producto_id')->toArray();
+
+
         
         $productos = ProductoVenta::where('venta_id', $venta->id)
                                    ->whereIn('producto_id', $descuento_id)
                                    ->get();
+
+        $total = 0;
         
         foreach ($productos as $producto) {
             $descuento = $descuentos->firstWhere('producto_id', $producto->producto_id);
             
             if ($descuento) {
+                
                 $producto->total = $descuento->precio * $producto->peso;
                 $producto->precio = $descuento->precio;
                 $producto->save(); 
+                $total += $producto->total;
             }
         }
     
+        $venta->total = $total;
         $venta->save();
+        $venta->load('pago');
+        $venta->pago->total = $venta->total;
+
+
     
         $venta->load('productos.producto');
     

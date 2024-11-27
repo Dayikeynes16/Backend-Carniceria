@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('is_proveedor')->nullable();
             $table->string('direccion');
             $table->string('cordenadas')->nullable();                                                                                                                      
-            $table->boolean('credito')->default('false');
+            $table->boolean('credito');
             $table->decimal('monto',total: 8, places: 2)->default(0);
         });
     }
@@ -29,9 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('venta', function (Blueprint $table) {
-            $table->dropForeign(['cliente_id']); // Asegúrate de que el nombre de la clave sea correcto
-        });
+        
         
         Schema::dropIfExists('clientes');    }
 };

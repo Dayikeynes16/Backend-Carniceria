@@ -29,6 +29,9 @@
                                 :loading="loading"
                                 :search="search"
                                 >
+                                <template v-slot:item.imagen="{item}">
+                                    <v-img :src="item.imagen"></v-img>
+                                    </template>
                                 <template v-slot:item.acciones="{item}">
                                     <v-btn @click="editProduct(item)">Editar</v-btn>
                                 </template>
@@ -132,8 +135,8 @@ const selectedClient = ref({
 });
 const search = ref('');
 const headers = ref([
+{    title: 'Imagen', key: 'imagen' },
     { title: 'Nombre', key: 'nombre' },
-    { title: 'Codigo', key: 'id' },
     { title: 'Precio Venta:', key: 'precio_de_venta' },
     { title: 'Acciones', key: 'acciones' }
   ]);
