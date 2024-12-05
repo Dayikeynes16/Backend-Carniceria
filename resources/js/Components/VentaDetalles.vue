@@ -27,10 +27,10 @@
         <v-tab :value="2" text="Cliente">
           
         </v-tab>
-        <v-tab :value="3" text="Pago">
+        <v-tab :value="3" text="Resumen">
           
         </v-tab>
-        <v-tab :value="4" text="Resumen">
+        <v-tab :value="4" text=" Pago">
 
         </v-tab>
         </v-tabs>
@@ -57,7 +57,6 @@
                             {{ FormatCurrency(producto.producto.precio_de_venta) }}
                           </td>
                           <td  v-if="venta.cliente_id" >{{ formatCurrency(producto.total/producto.peso) }}</td>
-                          <!-- <td>{{ formatCurrency(producto.peso * producto.producto.precio_de_venta) }}</td> -->
                           <td>
                             {{ producto.peso }} kg
                           </td>  
@@ -74,34 +73,7 @@
                       </v-col>
                     </v-row>
         
-                    <!-- <v-card-text v-for="producto in venta.productos" :key="producto.id">
-                      <v-row>
-                        <v-col cols="6">
-                          Producto:
-                        </v-col>
-                        <v-col cols="6">
-                          {{ producto.producto.nombre }}
-                        </v-col>
-                        <v-col cols="6">
-                          Total:
-                        </v-col>
-                        <v-col cols="6">
-                          {{ FormatCurrency(producto.total) }}
-                        </v-col>
-                        <v-col cols="6">
-                          Kilos:
-                        </v-col>
-                        <v-col cols="6">
-                          {{ producto.peso }} Kg
-                        </v-col>
-                        <v-col cols="6">
-                          Precio:
-                        </v-col>
-                        <v-col cols="6">
-                          {{ FormatCurrency(producto.producto.precio_de_venta) }}
-                        </v-col>
-                      </v-row>
-                    </v-card-text> -->
+             
                   </v-tabs-window-item>
                   <v-tabs-window-item :value="2">
                   
@@ -121,7 +93,7 @@
                     <v-btn block variant="tonal" color="blue" @click="AsociateSale()">Asociar</v-btn>
 
                 </v-tabs-window-item>
-                <v-tabs-window-item :value="3">
+                <v-tabs-window-item :value="4">
                   <v-row>
                   </v-row>
                       <v-row>
@@ -165,12 +137,16 @@
                           label="Transferencia"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6">
+                        <v-col cols="4">
+                          <v-btn @click="deleteSale(venta.id)" prepend-icon="mdi-delete">Cancelar</v-btn>
+                        </v-col>
+                        <v-col cols="4">
                           <v-btn block>Pendiente</v-btn>
                         </v-col>
-                        <v-col cols="6">
-                          <v-btn block>cobrar</v-btn>
+                        <v-col cols="4">
+                          <v-btn block @click="payment()">cobrar</v-btn>
                         </v-col>
+                       
 
                         
                       
@@ -178,8 +154,41 @@
 
                    
                 </v-tabs-window-item>
-                <v-tabs-window-item :value="4">
-                  verga
+                <v-tabs-window-item :value="3">
+                  <v-card>
+                    <!-- <v-card-tittle>Resumen</v-card-tittle> -->
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="6">
+                          <strong>Total:</strong>
+                        </v-col>
+                        <v-col cols="6">
+                              {{ formatCurrency(venta.total) }}
+                        </v-col>
+                     
+                          <v-col  cols="6">
+                            Cliente:
+                          </v-col>
+                          <v-col v-if="venta.cliente" cols="6">
+                            {{ venta.cliente.nombre }}
+                          </v-col>
+                          <v-col v-else cols="6">
+                            No se asocio ningun cliente a esta venta
+                          </v-col>
+
+                    
+                          <v-col cols="6">
+                            Status: 
+                          </v-col>
+                          <v-col cols="6">
+                            {{ venta.estatus }}
+                          </v-col>
+                          <v-col cols="6"></v-col>
+                        <v-col cols="6"></v-col>
+                      </v-row>
+                    </v-card-text>
+
+                  </v-card>
                 </v-tabs-window-item>
         
                 </v-tabs-window>
@@ -191,14 +200,14 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
-  import axios from 'axios';
+  import axios, { Axios } from 'axios';
   import FormatCurrency from '../composables/FormatCurrency.js';
   import Calculadora from './Calculadora.vue'
 import { ElMessage } from 'element-plus'
 import formatCurrency from '../composables/FormatCurrency.js';
 import { computed } from 'vue';
 
-  const emit = defineEmits(['cerrar','overlay']);
+  const emit = defineEmits(['cerrar','overlay','deleted']);
   const selectedClient = ref(null);
   const clients = ref([]);
   const overlay = ref(false);
@@ -241,6 +250,15 @@ import { computed } from 'vue';
 
 
   }
+
+  const deleteSale = async (ventum) => {
+    axios.delete(`/api/venta/${ventum}`)
+    .then(({data}) => {
+      emit("cerrar")
+      emit("deleted")
+
+    });
+}
   
   const fetchVenta = async () => {
     try {
@@ -275,6 +293,21 @@ import { computed } from 'vue';
     cambio,
   };
 });
+
+const payment = async ()  => {
+
+  const data = await axios.put(`api/pagos-back/${props.id}`, form.value)
+  .then(({data}) => {
+    ElMessage({
+      type:'success', 
+      message: 'venta cobrada'
+    })
+    emit('deleted')
+    console.log(data);
+  })
+
+  console.log(form.value);
+}
 
   const calculate = () => {
     pago.value.total = venta.value.total;

@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('detalles_pagos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cliente_id')->constrained('clientes')->nullable();
-            $table->decimal('monto', 10, 2); // Monto pagado en este pago
-            $table->string('metodo_de_pago'); // Método de pago (efectivo, tarjeta, transferencia, etc.)
-            $table->timestamp('fecha')->nullable(); // Fecha en que se realizó el pago
-            $table->string('referencia')->nullable(); // Número de referencia (opcional)
-            $table->timestamps(); // created_at y updated_at
+            $table->foreignId('cliente_id')->nullable()->constrained('clientes');
+            $table->foreignId('pago_id')->constrained('pagos');
+            $table->decimal('monto', 10, 2); 
+            $table->string('metodo_de_pago'); 
+            $table->timestamp('fecha')->nullable(); 
+            $table->string('referencia')->nullable(); 
+            $table->timestamps(); 
+            $table->softDeletes();
         });
     }
 

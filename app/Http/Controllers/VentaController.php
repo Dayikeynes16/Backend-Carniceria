@@ -18,7 +18,8 @@ class VentaController
      */
     public function index()
     {
-        $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->get();
+        // $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
+        $ventas = Venta::all();
         return response()->json(['data' => $ventas]);
     }
 
@@ -37,27 +38,32 @@ class VentaController
             'total' => 0,
             'pagado' => false,
             'metodo_de_pago' => 'efectivo',
-            'balanza' => $request->input('balanza')
+            'balanza' => $request->input('balanza'),
+            'estatus' => 'sin pagar'
         ]);
         $total = 0;
         foreach ($productos as $producto) {
-            $productoOriginal = Producto::find($producto['producto_id']);
+            $productoOriginal = Producto::find($producto['id']);
+
             $productoVenta = ProductoVenta::create([
                 'producto_id' => $productoOriginal->id,
                 'venta_id' => $venta->id,
                 'precio' => $productoOriginal->precio_de_venta,
                 'peso' => $producto['peso'],
-                'total' => $producto['peso'] * $productoOriginal->precio_de_venta
+                'total' => $producto['peso'] * $productoOriginal->precio_de_venta,
+                
             ]);
             $total += $productoVenta->total;
 
         }
         $venta->total = $total;
         $venta->save();
+        $venta->load('cliente');
         $pago = Pago::create([
             'total' => $total,
             'pendiente' => $total,
-            'venta_id' => $venta->id
+            'venta_id' => $venta->id,
+            'metodo' => ''
         ]);
 
         return response()->json(['data' => $venta]);
@@ -69,7 +75,7 @@ class VentaController
      */
     public function show(Venta $ventum)
     {
-        $ventum->load('productos.producto');
+        $ventum->load('productos.producto','pago','cliente');
         $clientes = Clientes::with('descuentos')->where('is_proveedor',false)->get();
         
     
@@ -112,7 +118,7 @@ class VentaController
     
         $venta->total = $total;
         $venta->save();
-        $venta->load('pago');
+        $venta->load('pago','cliente');
         $venta->pago->total = $venta->total;
 
 

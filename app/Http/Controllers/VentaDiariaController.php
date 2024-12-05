@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Venta;
 use App\Models\VentaDiaria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class VentaDiariaController
 {
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $ventas = VentaDiaria::latest()->get();
+        
+        // Obtener las ventas del día actual con paginación
+        $ventas = Venta::latest()
+                                ->paginate(4);
+    
         return response()->json(['data' => $ventas]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetallePago;
 use App\Models\Pago;
 use App\Models\Venta;
 use Illuminate\Http\Request;
@@ -38,36 +39,60 @@ class PagoController
     public function update($id, Request $request)
     {
         $request->validate([
-            'metodo_de_pago' => 'nullable|string',
             'tarjeta' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
-            'transferencia' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',  
-            'efectivo' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/', 
+            'transferencia' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'efectivo' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
         ]);
     
         $venta = Venta::with('pago')->find($id);
-        $pago = $venta->pago;
     
-        $totalPagado = ($request->input('tarjeta') ?? 0) + 
-                       ($request->input('transferencia') ?? 0) + 
-                       ($request->input('efectivo') ?? 0);
-    
-        $pago->pendiente -= $totalPagado;
-    
-        if ($pago->pendiente <= 0) {
-            $venta->pagado = true;
-            $pago->pendiente = 0; 
+        if (!$venta || !$venta->pago) {
+            return response()->json(['error' => 'Venta o pago no encontrado'], 404);
         }
     
-        $pago->tarjeta += $request->input('tarjeta', 0);  
-        $pago->transferencia += $request->input('transferencia', 0);
-        $pago->efectivo += $request->input('efectivo', 0);
+        $pago = $venta->pago;
+    
+        $pago->load('detalles');
+        $totalPagado = $pago->detalles->sum('monto');
+        $montoPendiente = $pago->total - $totalPagado;
+    
+        foreach (['tarjeta', 'transferencia', 'efectivo'] as $metodo) {
+            if ($request->$metodo > 0) {
+                $montoAPagar = min($request->$metodo, $montoPendiente);
+    
+                if ($montoAPagar > 0) {
+                    DetallePago::create([
+                        'pago_id' => $pago->id,
+                        'monto' => $montoAPagar,
+                        'metodo_de_pago' => $metodo,
+                    ]);
+    
+                    $montoPendiente -= $montoAPagar;
+                }
+            }
+        }
+        $pago->load('detalles');
+    
+        $totalPagado = $pago->detalles->sum('monto');
+        $pago->pendiente = max(0, $pago->total - $totalPagado); 
+    
         
-        $venta->save();
+        if ($pago->pendiente == 0) {
+            $venta->estatus = 'pagado';
+            $venta->pagado = true;
+        } elseif ($pago->pendiente < $pago->total) {
+            $venta->estatus = 'en proceso';
+        } else {
+            $venta->estatus = 'pendiente';
+        }
+    
         $pago->save();
+        $venta->save();
+    
+        $venta->load('pago.detalles');
     
         return response()->json(['data' => $venta]);
     }
-
     /**
      * Remove the specified resource from storage.
      */

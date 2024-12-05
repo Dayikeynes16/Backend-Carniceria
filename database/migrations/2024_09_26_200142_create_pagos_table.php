@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('venta_id')->nullable();
+            $table->foreignId('venta_id')->nullable()->constrained('ventas');
             $table->decimal('total', 10, 2); // El total de la venta
+            $table->string('metodo');
             $table->decimal('pendiente', 10, 2); // Monto restante por pagar
             $table->foreignId('cliente_id')->nullable()->constrained('clientes');
-            $table->timestamps(); // created_at y updated_at
+            $table->timestamps(); 
         });
     }
 

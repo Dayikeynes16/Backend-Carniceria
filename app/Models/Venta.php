@@ -20,6 +20,6 @@ class Venta extends Model
         return $this->hasOne(Pago::class);
     }
      public function cliente(){
-        return $this->hasOne(Clientes::class);
+        return $this->belongsTo(Clientes::class);
      }
 }

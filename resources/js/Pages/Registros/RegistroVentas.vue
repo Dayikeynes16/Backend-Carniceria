@@ -1,11 +1,10 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="6">
+            <v-col cols="4">
                 <v-card>
                     <v-card-title
-                        >Datos de las ventas
-                        {{ formatearFecha(dayjs()) }}</v-card-title
+                        >Datos de las ventas {{ formatearFecha(dayjs()) }}</v-card-title
                     >
                     <v-card-text> 
                         <v-row>
@@ -41,25 +40,44 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="8">
                 <v-card>
                     <v-card-title>
                         Registro de ventas
                     </v-card-title>
-                    <v-card-text>
-                        <v-list v-for="record in Records"> 
-                            <v-list-item >
-                                <v-list-item-title>
-                                    {{ FormatCurrency(record.total) }}
-                                </v-list-item-title>
-                                <v-list-item-subtitle>
-                                    {{ formatearFecha(record.created_at) }}
+                    <
+                        <v-virtual-scroll
+                        height="200"
+                        :items="Records"
+                        @load="getRecords"
+                        side="end"
+                        >
+                        <template v-slot:default="{ item }">
+                            
+                            <v-banner icon="mdi-shopping">
+                                
+                                <v-banner-text>
+                                
+                                           {{ formatRelativeTime(item.updated_at) }}
 
-                                </v-list-item-subtitle>
+                                           
+                                     <br>
+                                           <strong>
+                                               {{ formatCurrency(item.total) }}
+                                           </strong>
+                                  
+                                   
+                                </v-banner-text>
+                                <v-banner-actions>
+                                    <v-btn>hey</v-btn>
+                                </v-banner-actions>
+                            </v-banner>
+                        </template>
 
-                            </v-list-item>
-                        </v-list>
-                    </v-card-text>
+                        </v-virtual-scroll>
+
+                   
+                    
                 </v-card>
             </v-col>
         </v-row>
@@ -73,8 +91,11 @@ import { ref, onMounted } from "vue";
 import FormatCurrency from '../../composables/FormatCurrency'
 import 'dayjs/locale/es'; 
 import localeData from 'dayjs/plugin/localeData';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import formatCurrency from '../../composables/FormatCurrency';
 
 dayjs.extend(localeData);
+dayjs.extend(relativeTime);
 dayjs.locale('es');
 const form = ref({
     subtotal_efectivo: 0,
@@ -85,15 +106,57 @@ const form = ref({
     subtotal_gastos: 0,
 });
 
-const currentDate = ref(dayjs().format("DD/MM"));
-const Records = ref([]);
 
-const getRecords = () => {
-    axios.get("/corte-caja")
-    .then(({data}) => {
-        Records.value = data.data
-    })
+
+const Records = ref([]);
+const current_page = ref(1); // Página actual
+const lastPage = ref(null); // Última página (se obtiene del servidor)
+const page = ref(1); // Contador local de páginas
+const isLoading = ref(false);
+
+const getRecords = async ({ done }) => {
+    // Evitar solicitudes si ya se llegó a la última página
+    // if ( current_page.value === page.value) {
+    //     done?.("ok"); // Notifica que no hay más registros por cargar
+    //     console.log('perriyabsb');
+    //     return;
+    // }
+
+    isLoading.value = true;
+    if (done?.("loading")) {
+        
+    }
+    try {
+        isLoading.value = true;
+        const { data } = await axios.get(`/api/corte-caja?page=${page.value}`);
+
+        // Concatenar nuevos registros
+        Records.value = [...Records.value, ...data.data.data];
+
+        // Actualizar la página actual y la última página
+        current_page.value = data.data.current_page;
+        console.log(current_page.value);
+        lastPage.value = data.data.last_page;
+        page.value = current_page.value + 1; // Incrementar para la siguiente carga
+
+        done?.("ok"); // Finaliza el ciclo de carga infinita
+    } catch (error) {
+        console.error("Error al cargar registros:", error);
+        done?.("error"); // Notifica un error a `v-virtual-scroll`
+    } finally {
+        isLoading.value = false;
+    }
+
 };
+
+const formatHour = (fecha) => {
+    return dayjs(fecha).format('h:mm A');
+}
+
+const formatRelativeTime = (fecha) => {
+    return dayjs(fecha).fromNow();
+}
+
 
 const saveRecord = () => {
     axios.post('/corte-caja', form.value)
@@ -114,7 +177,7 @@ const formatearFecha = (fecha) => {
 }
 
 onMounted(() => {
-    getRecords();
-})
+  getRecords({ side: "end", done: () => {} });
+});
 
 </script>

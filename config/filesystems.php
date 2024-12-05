@@ -55,6 +55,17 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+        'supabase' => [
+        'driver' => 's3',
+        'key' => env('SUPABASE_ACCESS_KEY'),
+        'secret' => env('SUPABASE_SECRET_KEY'),
+        'region' => env('SUPABASE_REGION', 'us-west-1'),
+        'bucket' => env('SUPABASE_BUCKET'),
+        'endpoint' => env('SUPABASE_ENDPOINT'),
+        'use_path_style_endpoint' => true,
+        'visibility' => 'public', // Puedes ajustar a privado si es necesario
+        'throw' => false,
+        ]
 
     ],
 

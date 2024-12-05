@@ -9,14 +9,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Pago extends Model
 {
     use HasFactory;
-    protected $fillable = ['total', 'venta_id','pendiente'];
+    protected $fillable = ['total', 'venta_id','pendiente', 'metodo','cliente_id'];
 
     public function venta() {
         return $this->belongsTo(Venta::class);
     }
 
-    public function pagos(){
-        return $this->hasMany(DetallePago::class,'pago_id');
+    public function detalles() {
+        return $this->hasMany(DetallePago::class);
+    }
+
+    public function cliente() {
+        return $this->belongsTo(Clientes::class);
     }
 
 
