@@ -47,7 +47,7 @@
     <v-row>
         <v-col cols="6">
             <v-dialog v-model="addNewProduct" width="500">
-                <RegistroProductos @cancelado="addNewProduct = false" @actualizado="getProducts()" :Producto="selectedClient"></RegistroProductos>
+                <RegistroProductos @agregado="getProducts()" @cancelado="addNewProduct = false" @actualizado="getProducts()" :Producto="selectedClient"></RegistroProductos>
             </v-dialog>
         </v-col>
     </v-row>
