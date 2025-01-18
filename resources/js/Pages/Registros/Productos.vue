@@ -55,7 +55,20 @@
 </template>
 <script setup>
 import RegistroProductos from '../../Pages/Registros/RegistroProductos.vue'
+
 import axios from '../../axios';
+const getProducts = async () => {
+    addNewProduct.value = false
+    loading.value = true
+    await axios.get('/producto')
+    .then(({data}) => {
+       productos.value = data.data
+       loading.value = false
+    })
+}
+
+
+
 import { ref, onMounted } from 'vue';
 const form = ref({
     nombre: null,
@@ -112,15 +125,6 @@ const saveProduct = async () => {
     })
 }
 
-const getProducts = async () => {
-    addNewProduct.value = false
-    loading.value = true
-    await axios.get('/producto')
-    .then(({data}) => {
-       productos.value = data.data
-       loading.value = false
-    })
-}
 
 onMounted(() => {
     getProducts()

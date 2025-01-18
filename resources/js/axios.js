@@ -1,54 +1,43 @@
 import axios from "axios";
-import router from "@/router";
 
+// Get the CSRF token from the meta tag in your HTML template
+const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
+
+// Create an Axios instance
 const axiosInstance = axios.create({
-  withCredentials: true,
-  baseURL: import.meta.env.VITE_BASE_URL
+    baseURL: import.meta.env.VITE_BASE_URL, // Your backend base URL
+    withCredentials: true, // Required for session-based authentication
 });
 
-// Obtener el token CSRF del meta tag, si existe
-const tokenMetaTag = document.querySelector("meta[name='csrf-token']");
-const token = tokenMetaTag ? tokenMetaTag.getAttribute('content') : null;
-
-console.log('este es el fokin tokwen: ', token);
-
+// Add a request interceptor to include the CSRF token in the headers
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Configurar los headers sin sobrescribir los existentes
         config.headers = {
-            ...config.headers, // Mantener los headers anteriores
-            Accept: "application/json",
+            ...config.headers,
+            "X-CSRF-TOKEN": csrfToken, // Attach the CSRF token
+            "Accept": "application/json", // Specify response type
         };
-
-        // Si existe el token CSRF, lo agregamos a los headers
-        if (token) {
-            config.headers["X-CSRF-TOKEN"] = token;
-        }
-
         return config;
     },
     (error) => {
-        console.log(error.response);
+        console.error("Request Error:", error);
         return Promise.reject(error);
     }
 );
 
+// Add a response interceptor to handle errors globally
 axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
-        console.log(error.response);
-
+        console.error("Response Error:", error.response || error);
         if (
             error.response &&
             error.response.status === 401 &&
             error.response.data.message === "Unauthenticated."
         ) {
-            localStorage.removeItem("user");
-            router.push({ name: 'Login' }); // Redirigir al login si es necesario
+            // Handle unauthenticated state (optional)
+            localStorage.removeItem("user"); // Clear user data if necessary
         }
-
         return Promise.reject(error);
     }
 );

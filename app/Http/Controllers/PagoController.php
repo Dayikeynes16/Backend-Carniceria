@@ -45,12 +45,29 @@ class PagoController
         ]);
     
         $venta = Venta::with('pago')->find($id);
-    
-        if (!$venta || !$venta->pago) {
-            return response()->json(['error' => 'Venta o pago no encontrado'], 404);
-        }
-    
+
         $pago = $venta->pago;
+        
+        if (!$pago) {
+            # code...
+            $pago = Pago::create([
+                'total' => $venta->total,
+                'venta_id' => $venta->id,
+                'pendiente' =>$venta->total,
+                'metodo' => '',
+                'monto' => $venta->total
+
+            ]);
+            
+            
+        }
+
+    
+        // if (!$venta || !$venta->pago) {
+        //     return response()->json(['error' => 'Venta o pago no encontrado'], 404);
+        // }
+    
+        
     
         $pago->load('detalles');
         $totalPagado = $pago->detalles->sum('monto');

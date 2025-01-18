@@ -40,23 +40,28 @@ class ClientesController
      */
     public function show(Clientes $client_back)
     {
-        // Cargar las relaciones 'descuentos' y 'ventas.productos'
         $client_back->load('descuentos.producto');
     
-        // Obtener las ventas del cliente ordenadas por la fecha más reciente y paginadas
         $ventas = Venta::where('cliente_id', $client_back->id)->latest()->paginate(5);
-    
-        // Calcular el total vendido en el último mes
+
         $vendido_ultimo_mes = Venta::where('cliente_id', $client_back->id)
             ->whereBetween('created_at', [
-                now()->startOfMonth(), // Cambié a `startOfMonth()` para incluir ventas de este mes
-                now()->endOfMonth() // Cambié a `endOfMonth()` para incluir ventas de este mes
+                now()->startOfMonth(), 
+                now()->endOfMonth() 
             ])->sum('total');
-    
+        $ventas_pendientes = $client_back->ventas;
+        $total_pendiente = $ventas_pendientes->filter(
+            function($venta) {
+                return $venta->pagado === false;
+            }
+        )->sum('total');
+
         return response()->json([
             'data' => $client_back,
             'ventas' => $ventas,
-            'vendido_ultimo_mes' => $vendido_ultimo_mes
+            'vendido_ultimo_mes' => $vendido_ultimo_mes,
+            'pendientes' => $ventas_pendientes,
+            'total_pendiente' => $total_pendiente
         ]);
     }
     

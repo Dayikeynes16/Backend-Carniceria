@@ -45,16 +45,17 @@
                     <v-card-title>
                         Registro de ventas
                     </v-card-title>
-                    <
-                        <v-virtual-scroll
-                        height="200"
+                    
+                        <!-- <v-infinite-scroll
+                        height="100"
                         :items="Records"
-                        @load="getRecords"
+                        mode="intersect"
+                        @load="loadmore"
                         side="end"
                         >
-                        <template v-slot:default="{ item }">
+                        <template v-for="item in Records" :key="item">
                             
-                            <v-banner icon="mdi-shopping">
+                            <v-banner icon="mdi-shopping" class="ma-5">
                                 
                                 <v-banner-text>
                                 
@@ -74,13 +75,46 @@
                             </v-banner>
                         </template>
 
-                        </v-virtual-scroll>
+                        </v-infinite-scroll> -->
+                        <v-infinite-scroll
+                                    height="200"
+                                    :items="Records"
+                                    mode="intersect"
+                                    :onLoad="loadmore"
+                                    side="end"
+                                >
+                                    <template v-for="item in Records" :key="item.id">
+                                        <v-banner height="100" icon="mdi-shopping" class="ma-5 pa-4">
+                                            
+                                            <v-banner-text>
+                                                {{ formatRelativeTime(item.updated_at) }}
+
+                                                <strong>{{ formatCurrency(item.total) }}</strong>
+                                            </v-banner-text>
+                                            <v-banner-actions>
+                                                <v-btn>hey</v-btn>
+                                            </v-banner-actions>
+                                        </v-banner>
+                                    </template>
+
+                                    <template v-slot:loading>
+                                        <v-row class="justify-center">
+                                            <v-col cols="auto">
+                                                <v-spinner size="48"></v-spinner>
+                                            </v-col>
+                                        </v-row>
+                                    </template>
+                                </v-infinite-scroll>
+
+
+
 
                    
                     
                 </v-card>
             </v-col>
         </v-row>
+        <overlay :activo="isLoading"></overlay>
     </v-container>
 </template>
 <script setup>
@@ -93,6 +127,7 @@ import 'dayjs/locale/es';
 import localeData from 'dayjs/plugin/localeData';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import formatCurrency from '../../composables/FormatCurrency';
+import overlay from '../../Components/overlay.vue';
 
 dayjs.extend(localeData);
 dayjs.extend(relativeTime);
@@ -109,45 +144,35 @@ const form = ref({
 
 
 const Records = ref([]);
-const current_page = ref(1); // Página actual
-const lastPage = ref(null); // Última página (se obtiene del servidor)
-const page = ref(1); // Contador local de páginas
+const current_page = ref(1); 
+const lastPage = ref(null); 
+const page = ref(1); 
 const isLoading = ref(false);
+const next_page_url = ref(null);
+const activo = ref(false)
 
-const getRecords = async ({ done }) => {
-    // Evitar solicitudes si ya se llegó a la última página
-    // if ( current_page.value === page.value) {
-    //     done?.("ok"); // Notifica que no hay más registros por cargar
-    //     console.log('perriyabsb');
-    //     return;
-    // }
 
-    isLoading.value = true;
-    if (done?.("loading")) {
-        
-    }
+
+const getRecords = async () => {
     try {
-        isLoading.value = true;
-        const { data } = await axios.get(`/api/corte-caja?page=${page.value}`);
+        activo.value = true
 
-        // Concatenar nuevos registros
-        Records.value = [...Records.value, ...data.data.data];
-
-        // Actualizar la página actual y la última página
+        const { data } = await axios.get(`/api/corte-caja`);
+        Records.value.push(...data.data.data);
         current_page.value = data.data.current_page;
-        console.log(current_page.value);
+        next_page_url.value = data.data.next_page_url;
         lastPage.value = data.data.last_page;
-        page.value = current_page.value + 1; // Incrementar para la siguiente carga
+        page.value = current_page.value + 1;
+        activo.value = false
 
-        done?.("ok"); // Finaliza el ciclo de carga infinita
     } catch (error) {
-        console.error("Error al cargar registros:", error);
-        done?.("error"); // Notifica un error a `v-virtual-scroll`
-    } finally {
-        isLoading.value = false;
-    }
+        ElMessage.error('Error al cargar los registros');
+        activo.value = false
 
+    } 
 };
+
+
 
 const formatHour = (fecha) => {
     return dayjs(fecha).format('h:mm A');
@@ -156,6 +181,31 @@ const formatHour = (fecha) => {
 const formatRelativeTime = (fecha) => {
     return dayjs(fecha).fromNow();
 }
+
+
+const loadmore = ({ done }) => {
+    // if (isLoading.value || !next_page_url.value) {
+    //     done('empty'); // No hay más datos que cargar
+    //     return;
+    // }
+    
+    isLoading.value = true;
+
+    axios.get(next_page_url.value)
+        .then(({ data }) => {
+            let new_values = data.data.data;
+            console.log(data);
+            Records.value.push(...data.data.data); // Agregar más registros
+            current_page.value = data.current_page;
+            next_page_url.value = data.next_page_url;
+            isLoading.value = false;
+            done('ok'); 
+        })
+        .catch(() => {
+            done('error'); 
+            isLoading.value = false;
+        });
+};
 
 
 const saveRecord = () => {
@@ -177,7 +227,7 @@ const formatearFecha = (fecha) => {
 }
 
 onMounted(() => {
-  getRecords({ side: "end", done: () => {} });
+  getRecords();
 });
 
 </script>

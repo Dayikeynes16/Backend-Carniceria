@@ -5,7 +5,7 @@
                 
             </v-card>
         </v-container>
-        hola
+     
     </div>
 </template>
 <script setup>

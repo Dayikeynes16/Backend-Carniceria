@@ -18,8 +18,8 @@ class VentaController
      */
     public function index()
     {
-        // $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
-        $ventas = Venta::all();
+        $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
+        // $ventas = Venta::all();
         return response()->json(['data' => $ventas]);
     }
 
@@ -65,6 +65,8 @@ class VentaController
             'venta_id' => $venta->id,
             'metodo' => ''
         ]);
+        $pago->save();
+        $venta->load('pago');
 
         return response()->json(['data' => $venta]);
 
@@ -75,7 +77,7 @@ class VentaController
      */
     public function show(Venta $ventum)
     {
-        $ventum->load('productos.producto','pago','cliente');
+        $ventum->load('productos.producto','pago.detalles');
         $clientes = Clientes::with('descuentos')->where('is_proveedor',false)->get();
         
     
@@ -87,46 +89,72 @@ class VentaController
      */
     public function update(Venta $ventum, Request $request)
     {
-        $venta = $ventum;
-        
-        $venta->cliente_id = $request->input('cliente_id');
-        $cliente = Clientes::with('descuentos')->find($request->input('cliente_id'));
+        // Validar los datos de entrada
+        $validatedData = $request->validate([
+            'cliente_id' => 'required|exists:clientes,id',
+        ]);
     
-        $descuentos = $cliente->descuentos;
-        
-        $descuento_id = $descuentos->pluck('producto_id')->toArray();
-
-
-        
-        $productos = ProductoVenta::where('venta_id', $venta->id)
-                                   ->whereIn('producto_id', $descuento_id)
-                                   ->get();
-
-        $total = 0;
-        
-        foreach ($productos as $producto) {
-            $descuento = $descuentos->firstWhere('producto_id', $producto->producto_id);
-            
-            if ($descuento) {
-                
-                $producto->total = $descuento->precio * $producto->peso;
-                $producto->precio = $descuento->precio;
-                $producto->save(); 
-                $total += $producto->total;
-            }
+        $venta = $ventum;
+    
+        // Actualizar el cliente asociado a la venta
+        $venta->cliente_id = $validatedData['cliente_id'];
+    
+        // Cargar el cliente con sus descuentos
+        $cliente = Clientes::with('descuentos')->find($validatedData['cliente_id']);
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
         }
     
-        $venta->total = $total;
-        $venta->save();
-        $venta->load('pago','cliente');
-        $venta->pago->total = $venta->total;
-
-
+        $descuentos = $cliente->descuentos;
     
-        $venta->load('productos.producto');
+        // Obtener todos los productos de la venta
+        $productos = ProductoVenta::where('venta_id', $venta->id)->get();
+    
+        if ($productos->isEmpty()) {
+            $venta->load('pago', 'cliente', 'productos.producto');
+            return response()->json(['data' => $venta]);
+        }
+    
+        // Calcular el total considerando productos con y sin descuento
+        $total = 0;
+    
+        foreach ($productos as $producto) {
+            // Verificar si el producto tiene descuento
+            $descuento = $descuentos->firstWhere('producto_id', $producto->producto_id);
+    
+            if ($descuento) {
+                // Aplicar descuento si existe
+                $producto->precio = $descuento->precio;
+                $producto->total = $descuento->precio * $producto->peso;
+            } else {
+                // Usar el precio normal si no tiene descuento
+                $producto->total = $producto->precio * $producto->peso;
+            }
+    
+            // Guardar los cambios en el producto
+            $producto->save();
+    
+            // Sumar al total de la venta
+            $total += $producto->total;
+        }
+    
+        // Actualizar el total de la venta
+        $venta->update(['total' => $total]);
+    
+        // Actualizar el total del pago si existe
+        if ($venta->pago) {
+            $pago = $venta->pago;
+            $pago->total = $venta->total;
+            $pago->save();
+        }
+    
+        // Cargar todas las relaciones necesarias
+        $venta->load('pago', 'cliente', 'productos.producto');
     
         return response()->json(['data' => $venta]);
     }
+    
+    
     /**
      * Remove the specified resource from storage.
      */
@@ -135,5 +163,17 @@ class VentaController
         $ventum->delete();
 
         return $ventum;
+    }
+
+
+    public function create_pago() {
+        
+    }
+
+    public function pendiente(){
+        
+        $ventas = Venta::with('productos.producto','pago.detalles')->where('pagado', false)->where('estatus', 'en proceso')->get();
+
+        return response()->json(['data' => $ventas]);
     }
 }

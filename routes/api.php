@@ -22,7 +22,25 @@ use App\Models\Precio_especial;
 use Psr\Http\Client\ClientInterface;
 
 Route::apiResource('/producto', ProductosController::class);
+
+
+
+// Route::group(['prefix' => '/sapo'], static function () {
+
+//     Route::apiResource('/venta', VentaController::class);
+
+//     Route::get('/pendiente', [VentaController::class, 'pendiente']);
+
+
+// });
+
 Route::apiResource('/venta', VentaController::class);
+
+
+
+
+
+
 Route::apiResource('/producto-venta', ProductoVentaController::class);
 Route::apiResource('/corte-caja', VentaDiariaController::class);
 Route::apiResource('/gastos-back', GastosController::class);

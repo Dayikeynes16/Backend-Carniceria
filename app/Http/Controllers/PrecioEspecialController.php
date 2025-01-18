@@ -50,7 +50,9 @@ class PrecioEspecialController
      */
     public function update(Request $request, Precio_especial $precio_especial)
     {
-        //
+        $precio_especial->update($request->all());
+        $precio_especial->save();
+        return response()->json(['data' => $precio_especial]);
     }
 
     /**
@@ -58,6 +60,7 @@ class PrecioEspecialController
      */
     public function destroy(Precio_especial $precio_especial)
     {
-        //
+        $precio_especial->delete();
+        return response()->json(['data' => 'eliminado']);
     }
 }

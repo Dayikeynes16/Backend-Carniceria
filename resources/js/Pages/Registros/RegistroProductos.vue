@@ -77,7 +77,7 @@ const saveProduct = async () => {
     formData.append('imagen', Producto.value.imagen); 
     formData.append('publico', Producto.value.publico ? 0:1); 
     
-    data= await axios.post('/api/producto', formData)
+    data= await axios.post('/producto', formData)
     .then(({data}) => {
         console.log(data);
         emit('agregado')
@@ -94,13 +94,15 @@ const UpdateProduct = async () => {
     }
 
     
-    const data = await axios.put(`/api/producto/${Producto.value.id}`, Producto.value, formData)
+    const data = await axios.put(`/producto/${Producto.value.id}`, Producto.value, formData)
         .then((data)=>{
             console.log('hehehe'),
             emit('actualizado')
         })
+        console.log('perrihsbwn');
    
 };
+
 onMounted(() => {
     if (props.Producto.update) {
       Producto.value = { ...props.Producto, update: true };

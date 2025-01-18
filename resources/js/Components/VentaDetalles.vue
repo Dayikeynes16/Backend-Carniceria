@@ -102,7 +102,7 @@
                         >
                       <div style="text-align: center; width: 400px;">
                         <strong style="font-size: x-large;">Total: {{ FormatCurrency(venta.total) }}</strong><br>
-                        <strong style="font-size: x-large;">Resta: {{ FormatCurrency(pago.resta) }} </strong>
+                        <strong style="font-size: x-large;">Resta: {{ FormatCurrency(venta.pago.pendiente) }} </strong>
                         <br>
                         <strong style="font-size: x-large;" v-if="pago.cambio > 0">Cambio: {{ FormatCurrency(pago.cambio) }} </strong>
                       
@@ -206,7 +206,7 @@
 import { ElMessage } from 'element-plus'
 import formatCurrency from '../composables/FormatCurrency.js';
 import { computed } from 'vue';
-
+import { supabase } from '../connection.js';
   const emit = defineEmits(['cerrar','overlay','deleted']);
   const selectedClient = ref(null);
   const clients = ref([]);
@@ -264,11 +264,11 @@ import { computed } from 'vue';
     try {
       overlay.value = true;
       
-      const response = await axios.get(`api/venta/${props.id}`)
-      .then((response)=>{
-        venta.value = response.data.data;
-        clients.value = response.data.clientes;
-        })
+      const {data} = await axios.get(`api/sapo/venta/${props.id}`)
+      // const {data, error } = await supabase.from('venta').select()
+        venta.value = data.data;
+        clients.value = data.clientes;
+        
       overlay.value = false;
       
     } catch (error) {

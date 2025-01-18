@@ -17,4 +17,9 @@ export default defineConfig({
         host: true,
         port: 3000
     },
+    define: {
+        'process.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL),
+        'process.env.SUPABASE_KEY': JSON.stringify(process.env.SUPABASE_KEY),
+    }
+    
 });

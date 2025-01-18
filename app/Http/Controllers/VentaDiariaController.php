@@ -18,8 +18,7 @@ class VentaDiariaController
     {
         
         // Obtener las ventas del día actual con paginación
-        $ventas = Venta::latest()
-                                ->paginate(4);
+        $ventas = Venta::latest()->paginate(2);
     
         return response()->json(['data' => $ventas]);
     }

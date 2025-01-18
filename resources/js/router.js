@@ -48,7 +48,7 @@ const routes = [
                 path: '/cliente/:id',
                 name: 'detalle-cliente',
                 component: DetallesCliente,
-                props: true  // Esto permite pasar el parámetro como prop
+                props: true  
               }
         ]
     }      
