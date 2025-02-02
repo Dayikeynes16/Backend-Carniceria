@@ -43,7 +43,7 @@
                         <tr>
                           <th>Producto</th>
                           <th>Precio</th>
-                          <th v-if="venta.cliente_id">Precio con descuento</th>
+                          <!-- <th v-if="venta.cliente_id">Precio con descuento</th> -->
                           <th>Cantidad</th>
                           <th>Total</th>
                         </tr>
@@ -264,7 +264,7 @@ import { supabase } from '../connection.js';
     try {
       overlay.value = true;
       
-      const {data} = await axios.get(`api/sapo/venta/${props.id}`)
+      const {data} = await axios.get(`api/venta/${props.id}`)
       // const {data, error } = await supabase.from('venta').select()
         venta.value = data.data;
         clients.value = data.clientes;

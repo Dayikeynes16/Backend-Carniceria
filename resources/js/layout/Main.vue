@@ -1,18 +1,14 @@
 <template>
-    <Navbar></Navbar>
-    <v-main>
-        <RouterView></RouterView>
-    </v-main>
-
+    <v-app>
+        <Navbar></Navbar>
+        <router-view></router-view>
+    </v-app>
 </template>
+
 <script setup>
 import Navbar from '@/Components/Navbar.vue';
-import { onMounted } from 'vue';
-
-
-
-
-
-
-
 </script>
+
+<style scoped>
+
+</style>

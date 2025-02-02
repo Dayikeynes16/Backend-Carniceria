@@ -1,79 +1,115 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col cols="8">
-                <v-row v-for="venta in ventas">
-                    <v-col cols="4">
-                        <v-card>
-                            <v-btn color="black" :height="100"   block class="pa-5 ma-0" @click="venta.dialog = true" align="center">
-                                venta #{{ venta.id }} <br>
-                                balanza {{ venta.balanza }}
-                            </v-btn>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="8">
-                        <v-dialog v-model="venta.dialog" max-width="600" class="ma-0 pt-0">
-                                <VentaDetalles  @deleted="getSales()" @cerrar="venta.dialog = false"  :id="venta.id"></VentaDetalles>
-                        </v-dialog>
-                        <v-row>
-                          
-                        </v-row>
-                    </v-col>
+        <v-card class="pa-4 mb-4">
+            <v-card-title class="font-weight-bold">Filtrar Ventas</v-card-title>
+            <v-row>
+                <v-col cols="6">
+                    <v-btn
+                        block
+                        :color="filtro === 'activas' ? 'primary' : 'grey'"
+                        @click="getSales"
+                    >
+                        Ventas Activas
+                    </v-btn>
+                </v-col>
+                <v-col cols="6">
+                    <v-btn
+                        block
+                        :color="filtro === 'pendientes' ? 'primary' : 'grey'"
+                        @click="getPendientes"
+                    >
+                        Ventas Pendientes
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-card>
 
-                </v-row>
-            </v-col>
-            <v-col cols="4">
-                <v-row>
-                    <v-col cols="7">
-                        <v-btn @click="getSales()">Ventas Activas</v-btn>
-                    </v-col>
-                    <v-col cols="7">
-                        <v-btn @click="getPendientes()">Ventas Pendientes</v-btn>
-                    </v-col>
-                </v-row>
+        <v-row justify="start">
+            <v-col
+                v-for="venta in ventas"
+                :key="venta.id"
+                cols="12"
+                sm="6"
+                md="4"
+                lg="3"
+            >
+                <v-card
+                    @click="venta.dialog = true"
+                    max-width="344"
+                    class="mx-auto"
+                >
+                    <v-card-item>
+                        <v-card-title class="font-weight-bold">
+                            Card title
+                        </v-card-title>
+
+                        <v-card-subtitle>
+                            Card subtitle secondary text
+                        </v-card-subtitle>
+
+                        <template v-slot:append>
+                            <v-icon
+                                color="black"
+                                icon="mdi-information-outline"
+                            ></v-icon>
+                        </template>
+                    </v-card-item>
+
+                    <v-card-text class="justify-content">
+                        <span>10/03/2024</span>
+                        <span>10:30 am</span>
+                    </v-card-text>
+                </v-card>
+
+                <v-dialog v-model="venta.dialog" max-width="600">
+                    <VentaDetalles
+                        @deleted="getSales"
+                        @cerrar="venta.dialog = false"
+                        :id="venta.id"
+                    />
+                </v-dialog>
             </v-col>
         </v-row>
-        <overlay :activo="OverlayValue"> </overlay>
 
+        <overlay :activo="OverlayValue"></overlay>
     </v-container>
-
-
 </template>
+
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import axios from '../axios';
-import FormatCurrency from '../composables/FormatCurrency';
-import { supabase } from '../connection';
-import VentaDetalles from '../Components/VentaDetalles.vue';
-import overlay from '../Components/overlay.vue';
+import { ref, onMounted } from "vue";
+import axios from "../axios";
+import VentaDetalles from "../Components/VentaDetalles.vue";
+import overlay from "../Components/overlay.vue";
 
-
-const OverlayValue = ref(false)
-const selectedSale = ref()
-const token = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute("content");
-
-const ventas = ref([])
+const ventas = ref([]);
+const filtro = ref("activas");
+const OverlayValue = ref(false);
 
 const getPendientes = async () => {
-    OverlayValue.value = true
-
-    const {data} = await axios.get('/api/sapo/pendiente');
-    OverlayValue.value = false;
-    ventas.value = data.data;
-
-}
+    try {
+        OverlayValue.value = true;
+        filtro.value = "pendientes";
+        const { data } = await axios.get("/api/sapo/pendiente");
+        ventas.value = data.data.map((venta) => ({ ...venta, dialog: false }));
+    } catch (error) {
+        console.error("Error al obtener ventas pendientes:", error);
+    } finally {
+        OverlayValue.value = false;
+    }
+};
 
 const getSales = async () => {
-    OverlayValue.value = true
-
-    const {data} = await axios.get('/venta');
-    OverlayValue.value = false;
-    ventas.value = data.data;
-    console.log(data);
-
-}
+    try {
+        OverlayValue.value = true;
+        filtro.value = "activas";
+        const { data } = await axios.get("/venta");
+        ventas.value = data.data.map((venta) => ({ ...venta, dialog: false }));
+    } catch (error) {
+        console.error("Error al obtener ventas activas:", error);
+    } finally {
+        OverlayValue.value = false;
+    }
+};
 
 // const getNewSales = async () => {
 
@@ -89,23 +125,21 @@ const getSales = async () => {
 // })
 // }
 
-
-
-
 // supabase
 //   .channel('ventas')
 //   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ventas' }, handleInserts)
 //   .subscribe()
 
 onMounted(() => {
-
-  getSales()
-  console.log('este es el puto token: ', token);
-  
-
-})
-
-
-
-
+    getSales();
+});
 </script>
+
+<style scoped>
+.justify-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.5;
+}
+</style>

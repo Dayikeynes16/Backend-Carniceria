@@ -8,6 +8,8 @@ import prueba from './Pages/prueba.vue';
 import Producto from './Pages/Registros/Productos.vue';
 import venta from './Pages/venta.vue';
 import DetallesCliente from './Pages/DetallesCliente.vue';
+import notFound from './Pages/notFound.vue';
+
 const routes = [
     {
         name: 'Index',
@@ -41,7 +43,7 @@ const routes = [
             },
             {
                 name: 'prueba',
-                path: 'prueba',
+                path: '/prueba',
                 component: prueba
             },
             {
@@ -49,7 +51,12 @@ const routes = [
                 name: 'detalle-cliente',
                 component: DetallesCliente,
                 props: true  
-              }
+            },
+            {
+                path: '/:pathMatch(.*)*',
+                name: 'NotFound',
+                component: notFound,
+            }
         ]
     }      
     

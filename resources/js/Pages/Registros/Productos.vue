@@ -1,57 +1,59 @@
 <template>
-<v-row>
-    <v-col cols="12" class="ml-0">
-        <v-card class="ma-4 pa-4" elevation="6">
-            <v-card-title>Inventario</v-card-title>
-            <v-card-text>
-                <v-row>
-                    <v-col cols="12">
+    <v-container>
+        <v-row>
+            <v-col cols="12" class="ml-0">
+                <v-card class="ma-4 pa-4" elevation="6">
+                    <v-card-title>Inventario</v-card-title>
+                    <v-card-text>
                         <v-row>
-                            <v-col cols="8">
-                                <v-text-field
-                                    v-model="search"
-                                    label="Buscar"
-                                    prepend-inner-icon="mdi-magnify"
-                                    variant="outlined"
-                                    hide-details
-                                    single-line
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-btn  height="100%" block @click="NewClient()">Nuevo</v-btn>
-                            </v-col>
-                             </v-row>
-                        <v-row>
-                            <v-col>
-                                <v-data-table
-                                :headers="headers"
-                                :items="productos"
-                                :loading="loading"
-                                :search="search"
-                                >
-                                <template v-slot:item.imagen="{item}">
-                                    <v-img :src="item.imagen"></v-img>
-                                    </template>
-                                <template v-slot:item.acciones="{item}">
-                                    <v-btn @click="editProduct(item)">Editar</v-btn>
-                                </template>
-                    
-                                </v-data-table>
+                            <v-col cols="12">
+                                <v-row>
+                                    <v-col cols="8">
+                                        <v-text-field
+                                            v-model="search"
+                                            label="Buscar"
+                                            prepend-inner-icon="mdi-magnify"
+                                            variant="outlined"
+                                            hide-details
+                                            single-line
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <v-btn  height="100%" block @click="NewClient()">Nuevo</v-btn>
+                                    </v-col>
+                                     </v-row>
+                                <v-row>
+                                    <v-col>
+                                        <v-data-table
+                                        :headers="headers"
+                                        :items="productos"
+                                        :loading="loading"
+                                        :search="search"
+                                        >
+                                        <template v-slot:item.imagen="{item}">
+                                            <v-img :src="item.imagen"></v-img>
+                                            </template>
+                                        <template v-slot:item.acciones="{item}">
+                                            <v-btn @click="editProduct(item)">Editar</v-btn>
+                                        </template>
+                            
+                                        </v-data-table>
+                                    </v-col>
+                                </v-row>
                             </v-col>
                         </v-row>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-        </v-card>
-    </v-col>
-    <v-row>
-        <v-col cols="6">
-            <v-dialog v-model="addNewProduct" width="500">
-                <RegistroProductos @agregado="getProducts()" @cancelado="addNewProduct = false" @actualizado="getProducts()" :Producto="selectedClient"></RegistroProductos>
-            </v-dialog>
-        </v-col>
-    </v-row>
-</v-row>    
+                    </v-card-text>
+                </v-card>
+            </v-col>
+            <v-row>
+                <v-col cols="6">
+                    <v-dialog v-model="addNewProduct" width="500">
+                        <RegistroProductos @agregado="getProducts()" @cancelado="addNewProduct = false" @actualizado="getProducts()" :Producto="selectedClient"></RegistroProductos>
+                    </v-dialog>
+                </v-col>
+            </v-row>
+        </v-row>    
+    </v-container>
 </template>
 <script setup>
 import RegistroProductos from '../../Pages/Registros/RegistroProductos.vue'

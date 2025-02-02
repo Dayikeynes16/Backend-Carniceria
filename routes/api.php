@@ -25,14 +25,14 @@ Route::apiResource('/producto', ProductosController::class);
 
 
 
-// Route::group(['prefix' => '/sapo'], static function () {
+Route::group(['prefix' => '/sapo'], static function () {
 
-//     Route::apiResource('/venta', VentaController::class);
+    Route::apiResource('/venta', VentaController::class);
 
-//     Route::get('/pendiente', [VentaController::class, 'pendiente']);
+    Route::get('/pendiente', [VentaController::class, 'pendiente']);
 
 
-// });
+});
 
 Route::apiResource('/venta', VentaController::class);
 
