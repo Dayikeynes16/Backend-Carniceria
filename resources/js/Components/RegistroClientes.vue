@@ -36,7 +36,7 @@
   </template>
   
   <script setup>
-  import { defineEmits, ref, defineProps, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   import axios from '@/axios';
   const emit = defineEmits(['cancelado', 'agregado', 'actualizado']);
   const props = defineProps({

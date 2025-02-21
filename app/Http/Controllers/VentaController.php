@@ -19,7 +19,7 @@ class VentaController
     public function index()
     {
         $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
-         $ventas = Venta::all();
+        // $ventas = Venta::all();
         return response()->json(['data' => $ventas]);
     }
 
@@ -172,7 +172,7 @@ class VentaController
 
     public function pendiente(){
         
-        $ventas = Venta::with('productos.producto','pago.detalles')->where('pagado', false)->where('estatus', 'en proceso')->get();
+        $ventas = Venta::where('pagado', false)->where('estatus', 'en proceso')->get();
 
         return response()->json(['data' => $ventas]);
     }

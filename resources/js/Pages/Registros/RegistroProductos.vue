@@ -39,7 +39,7 @@
 </template>
 <script setup>
 import axios from '../../axios';
-import { ref, onMounted, defineProps, defineEmits } from 'vue';
+import { ref, onMounted } from 'vue';
 const emit = defineEmits(['cancelado', 'agregado', 'actualizado']);
 const token = document
     .querySelector("meta[name='csrf-token']")

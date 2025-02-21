@@ -6,7 +6,7 @@ import Gastos from './Pages/Gastos.vue';
 import Clientes from './Pages/Clientes.vue';
 import prueba from './Pages/prueba.vue';
 import Producto from './Pages/Registros/Productos.vue';
-import venta from './Pages/venta.vue';
+import venta from './Pages/Venta/venta.vue';
 import DetallesCliente from './Pages/DetallesCliente.vue';
 import notFound from './Pages/notFound.vue';
 
@@ -28,7 +28,7 @@ const routes = [
             },
             {
                 name: 'RegistroClientes',
-                path: 'registro-clientes',
+                path: '/registro-clientes',
                 component: Clientes
             },
             {

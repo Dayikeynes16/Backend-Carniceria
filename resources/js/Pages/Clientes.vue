@@ -128,7 +128,7 @@
   
   const getClients = () => {
     loadingClients.value = true
-    axios.get('api/client-back')
+    axios.get('/client-back')
       .then(({ data }) => {
         clientes.value = data.data;
         loadingClients.value = false

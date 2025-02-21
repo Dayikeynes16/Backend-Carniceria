@@ -10,7 +10,7 @@ class Venta extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['total','pagado','balanza', 'status', 'cliente_id'];
+    protected $fillable = ['total','pagado','balanza', 'estatus', 'cliente_id'];
 
     public function productos(){
         return $this->hasMany( ProductoVenta::class);

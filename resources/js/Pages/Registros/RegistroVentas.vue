@@ -157,7 +157,7 @@ const getRecords = async () => {
     try {
         activo.value = true
 
-        const { data } = await axios.get(`/api/corte-caja`);
+        const { data } = await axios.get(`/corte-caja`);
         Records.value.push(...data.data.data);
         current_page.value = data.data.current_page;
         next_page_url.value = data.data.next_page_url;

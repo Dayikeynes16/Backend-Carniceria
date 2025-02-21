@@ -26,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             
         ]);
+        $middleware->alias([
+            'ensure.api' => \App\Http\Middleware\EnsureApiRequest::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

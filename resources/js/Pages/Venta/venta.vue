@@ -40,11 +40,11 @@
                 >
                     <v-card-item>
                         <v-card-title class="font-weight-bold">
-                            Card title
+                            Orden #{{venta.id}}
                         </v-card-title>
 
                         <v-card-subtitle>
-                            Card subtitle secondary text
+                            Articulos: {{ venta.productos.length }}
                         </v-card-subtitle>
 
                         <template v-slot:append>
@@ -56,8 +56,8 @@
                     </v-card-item>
 
                     <v-card-text class="justify-content">
-                        <span>10/03/2024</span>
-                        <span>10:30 am</span>
+                        <span>{{ venta.created_at.split('T')[0] }}</span>
+                        <span>{{ venta.created_at.split('T')[1].split('.')[0] }}</span>
                     </v-card-text>
                 </v-card>
 
@@ -75,71 +75,13 @@
     </v-container>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import axios from "../axios";
-import VentaDetalles from "../Components/VentaDetalles.vue";
-import overlay from "../Components/overlay.vue";
-
-const ventas = ref([]);
-const filtro = ref("activas");
-const OverlayValue = ref(false);
-
-const getPendientes = async () => {
-    try {
-        OverlayValue.value = true;
-        filtro.value = "pendientes";
-        const { data } = await axios.get("/api/sapo/pendiente");
-        ventas.value = data.data.map((venta) => ({ ...venta, dialog: false }));
-    } catch (error) {
-        console.error("Error al obtener ventas pendientes:", error);
-    } finally {
-        OverlayValue.value = false;
-    }
-};
-
-const getSales = async () => {
-    try {
-        OverlayValue.value = true;
-        filtro.value = "activas";
-        const { data } = await axios.get("/venta");
-        ventas.value = data.data.map((venta) => ({ ...venta, dialog: false }));
-    } catch (error) {
-        console.error("Error al obtener ventas activas:", error);
-    } finally {
-        OverlayValue.value = false;
-    }
-};
-
-// const getNewSales = async () => {
-
-// await axios.get('/api/venta')
-// .then(({data}) => {
-//     const newsales = data.data;
-//     newsales.forEach(venta => {
-//         const exists = ventas.value.some((v) => v.id === venta.id);
-//             if (!exists) {
-//                 ventas.value.push(venta); // Añade el elemento nuevo al array
-//             }
-//     });
-// })
-// }
-
-// supabase
-//   .channel('ventas')
-//   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ventas' }, handleInserts)
-//   .subscribe()
-
-onMounted(() => {
-    getSales();
-});
-</script>
+<script src="./venta.js"></script>
 
 <style scoped>
 .justify-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  opacity: 0.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0.5;
 }
 </style>

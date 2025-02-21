@@ -295,7 +295,7 @@ const deleteDiscount = async (item) => {
     try {
         activo.value = true;
 
-        const { data } = await axios.delete(`/api/precio-especial/${item.id}`);
+        const { data } = await axios.delete(`/precio-especial/${item.id}`);
         ElMessage({
             type: "success",
             message: "Borrado Exitosamente",
