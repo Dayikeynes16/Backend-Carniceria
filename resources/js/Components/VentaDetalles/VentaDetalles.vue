@@ -204,18 +204,16 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "../axios.js";
-import FormatCurrency from "../composables/FormatCurrency.js";
+import axios from "../../axios.js";
+import FormatCurrency from "../../composables/FormatCurrency.js";
 import { ElMessage } from "element-plus";
-import formatCurrency from "../composables/FormatCurrency.js";
+import formatCurrency from "../../composables/FormatCurrency.js";
 import { computed } from "vue";
-import { supabase } from "../connection.js";
 const emit = defineEmits(["cerrar", "overlay", "deleted"]);
 const selectedClient = ref(null);
 const clients = ref([]);
 const overlay = ref(false);
 const tab = ref(null);
-const loading = ref(false);
 
 const props = defineProps({
     id: {
@@ -234,7 +232,7 @@ const venta = ref({});
 
 const AsociateSale = async () => {
     overlay.value = true;
-    let response = await axios
+    await axios
         .put(`venta/${props.id}`, { cliente_id: selectedClient.value.id })
         .then((response) => {
             console.log(response.data.data, "dahebbe");
@@ -249,7 +247,7 @@ const AsociateSale = async () => {
             tab.value = 3;
         });
 
-    console.log('AsociateSale', venta.value);
+    console.log("AsociateSale", venta.value);
 };
 
 const deleteSale = async (ventum) => {
@@ -262,18 +260,14 @@ const deleteSale = async (ventum) => {
 const fetchVenta = async () => {
     try {
         overlay.value = true;
-
         const { data } = await axios.get(`/venta/${props.id}`);
-        // const {data, error } = await supabase.from('venta').select()
         venta.value = data.data;
         clients.value = data.clientes;
-
-        overlay.value = false;
     } catch (error) {
         console.error("Error al obtener la venta:", error);
+    } finally {
         overlay.value = false;
     }
-    console.log('fetchVenta',venta.value);
 };
 
 const pago = computed(() => {
@@ -285,7 +279,7 @@ const pago = computed(() => {
     const resta = total - efectivo - tarjeta - transferencia;
     const cambio = resta < 0 ? -resta : 0;
 
-    console.log('pago', venta.value);
+    console.log("pago", venta.value);
 
     return {
         total,

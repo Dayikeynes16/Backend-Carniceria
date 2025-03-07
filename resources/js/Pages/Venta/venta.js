@@ -1,6 +1,6 @@
 import { ref, onMounted } from "vue";
 import axios from "../../axios";
-import VentaDetalles from "../../Components/VentaDetalles.vue";
+import VentaDetalles from "../../Components/VentaDetalles/VentaDetalles.vue";
 import overlay from "../../Components/overlay.vue";
 import DetalleVenta from "../../Components/DetalleVenta.vue";
 

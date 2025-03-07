@@ -30,7 +30,8 @@ class VentaController
     {
         $request->validate([
             'balanza' => 'required|integer',
-            'productos' => 'required|array'
+            'productos' => 'required|array',
+            'estatus' => 'required|string',
         ]);
 
         $productos = $request->input('productos');
@@ -39,7 +40,7 @@ class VentaController
             'pagado' => false,
             'metodo_de_pago' => 'efectivo',
             'balanza' => $request->input('balanza'),
-            'estatus' => 'sin pagar'
+            'estatus' => $request->input('estatus'),
         ]);
         $total = 0;
         foreach ($productos as $producto) {
@@ -89,17 +90,13 @@ class VentaController
      */
     public function update(Venta $ventum, Request $request)
     {
-        // Validar los datos de entrada
         $validatedData = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
         ]);
     
         $venta = $ventum;
-    
-        // Actualizar el cliente asociado a la venta
         $venta->cliente_id = $validatedData['cliente_id'];
     
-        // Cargar el cliente con sus descuentos
         $cliente = Clientes::with('descuentos')->find($validatedData['cliente_id']);
         if (!$cliente) {
             return response()->json(['error' => 'Cliente no encontrado'], 404);
@@ -172,8 +169,7 @@ class VentaController
 
     public function pendiente(){
         
-        $ventas = Venta::where('pagado', false)->where('estatus', 'en proceso')->get();
-
+        $ventas = Venta::with('productos.producto', 'pago')->where('pagado', false)->where('estatus', 'en proceso')->get();
         return response()->json(['data' => $ventas]);
     }
 }

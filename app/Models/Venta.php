@@ -10,6 +10,7 @@ class Venta extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'ventas';
     protected $fillable = ['total','pagado','balanza', 'estatus', 'cliente_id'];
 
     public function productos(){
