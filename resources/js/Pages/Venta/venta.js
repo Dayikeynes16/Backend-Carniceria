@@ -37,12 +37,11 @@ export default {
                 OverlayValue.value = true;
                 filtro.value = "activas";
                 const { data } = await axios.get("/venta");
+                
                 ventas.value = data.data.map((venta) => ({
                     ...venta,
                     dialog: false,
                 }));
-                console.log('Sales',ventas.value);
-                
             } catch (error) {
                 console.error("Error al obtener ventas activas:", error);
             } finally {

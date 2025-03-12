@@ -18,8 +18,8 @@ class VentaController
      */
     public function index()
     {
-        $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
-        // $ventas = Venta::all();
+        // $ventas = Venta::with('productos.producto','pago')->where('pagado', false)->where('estatus', 'activo')->get();
+        $ventas = Venta::with('productos.producto','pago')->get();
         return response()->json(['data' => $ventas]);
     }
 

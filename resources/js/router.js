@@ -9,6 +9,7 @@ import Producto from './Pages/Registros/Productos.vue';
 import venta from './Pages/Venta/venta.vue';
 import DetallesCliente from './Pages/DetallesCliente.vue';
 import notFound from './Pages/notFound.vue';
+import Ventas from './Pages/Ventas/Ventas.vue';
 
 const routes = [
     {
@@ -51,6 +52,11 @@ const routes = [
                 name: 'detalle-cliente',
                 component: DetallesCliente,
                 props: true  
+            },
+            {
+                path: '/prueba',
+                name: 'prueba',
+                component: Ventas,
             },
             {
                 path: '/:pathMatch(.*)*',
