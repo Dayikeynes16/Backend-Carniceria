@@ -10,6 +10,8 @@ import venta from './Pages/Venta/venta.vue';
 import DetallesCliente from './Pages/DetallesCliente.vue';
 import notFound from './Pages/notFound.vue';
 import Ventas from './Pages/Ventas/Ventas.vue';
+import VentaDetalle from './Pages/VentaDetalle/VentaDetalle.vue';
+import VentaDiaria from './Pages/VentaDiaria/VentaDiaria.vue';
 
 const routes = [
     {
@@ -43,6 +45,11 @@ const routes = [
                 component: venta
             },
             {
+                name: 'ventasDiarias',
+                path: '/ventasDiarias',
+                component: VentaDiaria
+            },
+            {
                 name: 'prueba',
                 path: '/prueba',
                 component: prueba
@@ -57,6 +64,12 @@ const routes = [
                 path: '/prueba',
                 name: 'prueba',
                 component: Ventas,
+            },
+            {
+                name: 'detalle-venta',
+                path: '/ventas/:id',
+                component: VentaDetalle,
+                props: true
             },
             {
                 path: '/:pathMatch(.*)*',

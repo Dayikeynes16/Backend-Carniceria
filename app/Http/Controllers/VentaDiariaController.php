@@ -10,17 +10,15 @@ use Illuminate\Support\Carbon;
 
 class VentaDiariaController
 {
-
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        
-        // Obtener las ventas del día actual con paginación
-        $ventas = Venta::latest()->paginate(2);
+        $today = Carbon::today()->toDateString();
+        $registros = Venta::with('productos.producto','pago')->whereDate('created_at', $today)->orderBy('id','asc')->get();
     
-        return response()->json(['data' => $ventas]);
+        return response()->json(['data' => $registros]);
     }
 
     /**

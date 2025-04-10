@@ -12,12 +12,15 @@ export default {
     const { 
       filtroActivo, busqueda,
       pedidosFiltrados, cargarPedidos,
+      pedidos,
       cargando, error } = usePedidos();
 
     const { ordenActual, opcionesFiltro, ordenarPor, ordenarLista } = useOrdenamiento();
 
     const pedidosOrdenados = computed(() => {
-      return ordenActual.value ? ordenarLista(pedidosFiltrados.value, ordenActual.value) : pedidosFiltrados.value;
+      const listaFiltrada = pedidosFiltrados.value;
+      console.log('Lista', listaFiltrada);
+      return ordenActual.value ? ordenarLista(listaFiltrada, ordenActual.value) : listaFiltrada;
     });
 
     watch(filtroActivo, cargarPedidos, { immediate: true });

@@ -53,6 +53,17 @@
       </v-list-item>
 
       <v-list-item
+        @click="router.push({ name: 'ventasDiarias' })"
+        class="nav-item"
+        :class="{ 'nav-item--active': isActive('ventasDiarias') }"
+      >
+        <template #prepend>
+          <v-icon class="icon-white">mdi-invoice-list-outline</v-icon>
+        </template>
+        Ventas diarias
+      </v-list-item>
+
+      <v-list-item
         @click="router.push({ name: 'ventas' })"
         class="nav-item"
         :class="{ 'nav-item--active': isActive('ventas') }"

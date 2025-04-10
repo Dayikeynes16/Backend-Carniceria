@@ -100,7 +100,7 @@
               </v-col>
               <v-col cols="6">
                 <div class="text-caption text-medium-emphasis">Productos</div>
-                <div>{{ pedido.productos.length }}</div>
+                <div>{{ pedido.productos?.length || 0}}</div>
               </v-col>
               <v-col cols="12">
                 <div class="text-caption text-medium-emphasis">Total</div>
